@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math & Symmetry Hub</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --bg: #f4f7f6;
+            --card-bg: #ffffff;
+            --text: #333333;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+        }
+
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            letter-spacing: 1px;
+        }
+
+        header p {
+            margin: 10px 0 0;
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        /* Responsive Grid Layout */
+        .grid {
+            display: grid;
+            /* This line makes it responsive: cards auto-fit the screen width */
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        /* Card Design */
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            border-top: 5px solid var(--secondary);
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 25px rgba(0,0,0,0.1);
+        }
+
+        .icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+
+        .card h2 {
+            margin: 0 0 15px;
+            color: var(--primary);
+            font-size: 1.5rem;
+        }
+
+        .card p {
+            color: #666;
+            margin-bottom: 25px;
+            flex-grow: 1; /* Pushes the button to the bottom evenly */
+        }
+
+        .btn {
+            background-color: var(--secondary);
+            color: white;
+            text-decoration: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-weight: bold;
+            transition: background-color 0.2s;
+            width: 80%;
+        }
+
+        .btn:hover {
+            background-color: #2980b9;
+        }
+
+        /* Style for future empty cards */
+        .card.future {
+            border-top: 5px solid #bdc3c7;
+            opacity: 0.7;
+        }
+        .card.future .btn {
+            background-color: #bdc3c7;
+            pointer-events: none; /* Disables clicking */
+        }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Math & Symmetry Hub</h1>
+        <p>Interactive tools and games to explore geometry</p>
+    </header>
+
+    <div class="container">
+        <div class="grid">
+            
+            <!-- CARD 1: Symmetry Defense Game -->
+            <div class="card">
+                <div class="icon">🪙</div>
+                <h2>Symmetry Defense</h2>
+                <p>A two-player strategy game. Place and move pennies on a 4x4 grid to create or block lines of symmetry.</p>
+                <a href="defense.html" class="btn">Play Game</a>
+            </div>
+
+            <!-- CARD 2: Folding Platform -->
+            <div class="card">
+                <div class="icon">🦋</div>
+                <h2>Symmetry Folding</h2>
+                <p>An interactive sandbox. Draw shapes, plot custom reflection lines, and fold them to test for symmetry.</p>
+                <a href="folding.html" class="btn">Launch Tool</a>
+            </div>
+
+            <!-- CARD 3: Placeholder for later -->
+            <div class="card future">
+                <div class="icon">➕</div>
+                <h2>Coming Soon</h2>
+                <p>More interactive math games and geometric tools will be added here in the future.</p>
+                <a href="#" class="btn">Stay Tuned</a>
+            </div>
+
+        </div>
+    </div>
+
+</body>
+</html>
