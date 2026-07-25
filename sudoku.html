@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sudoku - 6x6 & 9x9</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --bg: #f4f7f6;
+            --card-bg: #ffffff;
+            --text: #333333;
+            --success: #2ecc71;
+            --danger: #e74c3c;
+            --cell-bg: #ffffff;
+            --cell-readonly-bg: #e8ecf1;
+            --border-color: #2c3e50;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 30px 20px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            box-sizing: border-box;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2.2rem;
+            letter-spacing: 1px;
+        }
+
+        .controls {
+            background-color: var(--card-bg);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 20px;
+            max-width: 600px;
+        }
+
+        select, button {
+            padding: 10px 15px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            outline: none;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        button {
+            background-color: var(--secondary);
+            color: white;
+            border: none;
+            font-weight: bold;
+            transition: background-color 0.2s;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        button.outline {
+            background-color: transparent;
+            color: var(--secondary);
+            border: 2px solid var(--secondary);
+        }
+
+        button.outline:hover {
+            background-color: var(--secondary);
+            color: white;
+        }
+
+        /* Sudoku Board Layout */
+        .board-container {
+            margin-bottom: 40px;
+        }
+
+        .sudoku-board {
+            display: grid;
+            background-color: var(--border-color);
+            border: 3px solid var(--border-color);
+            gap: 1px;
+            border-radius: 4px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+
+        .cell {
+            width: 45px;
+            height: 45px;
+            font-size: 24px;
+            text-align: center;
+            border: none;
+            background-color: var(--cell-bg);
+            color: var(--secondary);
+            outline: none;
+            padding: 0;
+            margin: 0;
+            transition: background-color 0.2s;
+        }
+
+        .cell:focus {
+            background-color: #e3f2fd;
+        }
+
+        .cell.readonly {
+            background-color: var(--cell-readonly-bg);
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        .cell.error {
+            color: var(--danger);
+            background-color: #fde8e8;
+        }
+
+        /* Message Banner */
+        #message {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-align: center;
+            min-height: 24px;
+        }
+
+        .msg-success { color: var(--success); }
+        .msg-error { color: var(--danger); }
+
+        @media (max-width: 500px) {
+            .cell { width: 35px; height: 35px; font-size: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Sudoku Challenge</h1>
+    </header>
+
+    <div class="controls">
+        <select id="size-select">
+            <option value="9">9x9 Grid</option>
+            <option value="6">6x6 Grid</option>
+        </select>
+        
+        <select id="difficulty-select">
+            <option value="easy">Easy</option>
+            <option value="medium">Medium</option>
+            <option value="hard">Hard</option>
+            <option value="expert">Expert</option>
+        </select>
+
+        <button onclick="startGame()">New Game</button>
+        <button class="outline" onclick="validateBoard()">Check Errors</button>
+    </div>
+
+    <div id="message"></div>
+
+    <div class="board-container">
+        <div id="board" class="sudoku-board"></div>
+    </div>
+
+<script>
+    // Sudoku Generator Class
+    class SudokuGenerator {
+        constructor(size, difficulty) {
+            this.size = size;
+            this.boxRows = size === 9 ? 3 : 2;
+            this.boxCols = 3;
+            
+            // Define number of missing cells for each grid size and difficulty
+            const difficultyMap = {
+                9: { easy: 30, medium: 40, hard: 50, expert: 60 },
+                6: { easy: 12, medium: 16, hard: 20, expert: 24 }
+            };
+            this.missingCount = difficultyMap[size][difficulty];
+
+            this.matrix = Array.from({length: size}, () => Array(size).fill(0));
+            this.solution = [];
+            
+            this.generate();
+        }
+
+        generate() {
+            // 1. Fill diagonal subgrids (they are completely independent)
+            for (let r = 0, c = 0; r < this.size && c < this.size; r += this.boxRows, c += this.boxCols) {
+                this.fillBox(r, c);
+            }
+            
+            // 2. Solve the rest of the board to get a full valid grid
+            this.solveBoard();
+            
+            // 3. Save a copy of the completed matrix as the solution
+            this.solution = this.matrix.map(row => [...row]);
+            
+            // 4. Remove elements based on difficulty
+            this.removeDigits();
+        }
+
+        fillBox(rowStart, colStart) {
+            let nums = [];
+            for (let i = 1; i <= this.size; i++) nums.push(i);
+            // Shuffle
+            nums.sort(() => Math.random() - 0.5);
+
+            let idx = 0;
+            for (let i = 0; i < this.boxRows; i++) {
+                for (let j = 0; j < this.boxCols; j++) {
+                    this.matrix[rowStart + i][colStart + j] = nums[idx++];
+                }
+            }
+        }
+
+        checkSafe(row, col, num) {
+            // Check row
+            for (let x = 0; x < this.size; x++) {
+                if (this.matrix[row][x] === num) return false;
+            }
+            // Check column
+            for (let x = 0; x < this.size; x++) {
+                if (this.matrix[x][col] === num) return false;
+            }
+            // Check subgrid
+            let startRow = row - (row % this.boxRows);
+            let startCol = col - (col % this.boxCols);
+            for (let i = 0; i < this.boxRows; i++) {
+                for (let j = 0; j < this.boxCols; j++) {
+                    if (this.matrix[i + startRow][j + startCol] === num) return false;
+                }
+            }
+            return true;
+        }
+
+        solveBoard() {
+            for (let r = 0; r < this.size; r++) {
+                for (let c = 0; c < this.size; c++) {
+                    if (this.matrix[r][c] === 0) {
+                        for (let num = 1; num <= this.size; num++) {
+                            if (this.checkSafe(r, c, num)) {
+                                this.matrix[r][c] = num;
+                                if (this.solveBoard()) return true;
+                                this.matrix[r][c] = 0; // Backtrack
+                            }
+                        }
+                        return false; 
+                    }
+                }
+            }
+            return true;
+        }
+
+        removeDigits() {
+            let count = this.missingCount;
+            while (count > 0) {
+                let cellId = Math.floor(Math.random() * (this.size * this.size));
+                let r = Math.floor(cellId / this.size);
+                let c = cellId % this.size;
+                if (this.matrix[r][c] !== 0) {
+                    this.matrix[r][c] = 0;
+                    count--;
+                }
+            }
+        }
+    }
+
+    // Game UI State
+    let currentGame = null;
+    const boardEl = document.getElementById('board');
+    const msgEl = document.getElementById('message');
+
+    function startGame() {
+        const size = parseInt(document.getElementById('size-select').value);
+        const difficulty = document.getElementById('difficulty-select').value;
+        
+        // Reset UI
+        boardEl.innerHTML = '';
+        msgEl.textContent = '';
+        msgEl.className = '';
+        
+        // Adjust CSS Grid layout
+        boardEl.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
+
+        // Generate Game Logic
+        currentGame = new SudokuGenerator(size, difficulty);
+
+        // Render DOM Elements
+        for (let r = 0; r < size; r++) {
+            for (let c = 0; c < size; c++) {
+                const val = currentGame.matrix[r][c];
+                const input = document.createElement('input');
+                input.type = 'text';
+                input.inputMode = 'numeric';
+                input.maxLength = 1;
+                input.className = 'cell';
+                input.dataset.r = r;
+                input.dataset.c = c;
+
+                // Thick Borders for Subgrids
+                // Add thicker border-right after columns 3, 6
+                if ((c + 1) % currentGame.boxCols === 0 && c !== size - 1) {
+                    input.style.borderRight = '3px solid var(--border-color)';
+                }
+                // Add thicker border-bottom after rows based on box logic
+                if ((r + 1) % currentGame.boxRows === 0 && r !== size - 1) {
+                    input.style.borderBottom = '3px solid var(--border-color)';
+                }
+
+                if (val !== 0) {
+                    input.value = val;
+                    input.readOnly = true;
+                    input.classList.add('readonly');
+                } else {
+                    // Input Validation handler
+                    input.addEventListener('input', function(e) {
+                        this.classList.remove('error'); // Clear error style on typing
+                        msgEl.textContent = '';
+                        
+                        let enteredValue = this.value;
+                        // Restrict inputs to 1-N
+                        if (!/^[1-9]$/.test(enteredValue) || parseInt(enteredValue) > size) {
+                            this.value = '';
+                        }
+                        
+                        checkWinCondition();
+                    });
+                }
+
+                boardEl.appendChild(input);
+            }
+        }
+    }
+
+    function validateBoard() {
+        if (!currentGame) return;
+        let errorsFound = false;
+        const inputs = document.querySelectorAll('.cell');
+        
+        inputs.forEach(input => {
+            if (!input.readOnly && input.value !== '') {
+                const r = parseInt(input.dataset.r);
+                const c = parseInt(input.dataset.c);
+                const val = parseInt(input.value);
+                
+                if (val !== currentGame.solution[r][c]) {
+                    input.classList.add('error');
+                    errorsFound = true;
+                } else {
+                    input.classList.remove('error');
+                }
+            }
+        });
+
+        if (errorsFound) {
+            msgEl.textContent = 'Oops! There are some mistakes.';
+            msgEl.className = 'msg-error';
+        } else {
+            msgEl.textContent = 'Everything looks good so far!';
+            msgEl.className = 'msg-success';
+        }
+    }
+
+    function checkWinCondition() {
+        const inputs = document.querySelectorAll('.cell');
+        let isComplete = true;
+        let isCorrect = true;
+
+        inputs.forEach(input => {
+            const r = parseInt(input.dataset.r);
+            const c = parseInt(input.dataset.c);
+            const val = parseInt(input.value);
+
+            if (input.value === '') {
+                isComplete = false;
+            } else if (val !== currentGame.solution[r][c]) {
+                isCorrect = false;
+            }
+        });
+
+        if (isComplete && isCorrect) {
+            msgEl.textContent = '🎉 Congratulations! You solved it! 🎉';
+            msgEl.className = 'msg-success';
+            
+            // Lock the board
+            inputs.forEach(input => input.readOnly = true);
+        }
+    }
+
+    // Initialize first game on load
+    window.onload = startGame;
+</script>
+
+</body>
+</html>
