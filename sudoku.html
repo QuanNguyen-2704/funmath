@@ -15,7 +15,8 @@
             --danger: #e74c3c;
             --cell-bg: #ffffff;
             --cell-readonly-bg: #e8ecf1;
-            --border-color: #2c3e50;
+            --border-color: #2c3e50; /* Bold subgrid line color */
+            --grid-line: #cbd5e1;   /* Thin cell line color */
             --highlight: #b3e5fc;
         }
 
@@ -113,25 +114,31 @@
 
         .sudoku-board {
             display: grid;
-            background-color: var(--border-color);
-            border: 3px solid var(--border-color);
-            gap: 1px;
+            border: 3px solid var(--border-color); /* Bold outer edge */
             border-radius: 4px;
             box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            overflow: hidden;
+            background-color: var(--cell-bg);
         }
 
         .cell {
             width: 45px;
             height: 45px;
+            box-sizing: border-box;
             font-size: 24px;
             text-align: center;
-            border: none;
             background-color: var(--cell-bg);
             color: var(--secondary);
             outline: none;
             padding: 0;
             margin: 0;
             transition: background-color 0.2s, color 0.2s;
+            
+            /* Default thin borders for standard cells */
+            border-top: none;
+            border-left: none;
+            border-right: 1px solid var(--grid-line);
+            border-bottom: 1px solid var(--grid-line);
         }
 
         /* Number Highlighting */
@@ -318,12 +325,17 @@
                 input.dataset.r = r;
                 input.dataset.c = c;
 
-                // Subgrid Borders
+                // Create bold borders for subgrid dividers ONLY
                 if ((c + 1) % currentGame.boxCols === 0 && c !== size - 1) {
                     input.style.borderRight = '3px solid var(--border-color)';
+                } else if (c === size - 1) {
+                    input.style.borderRight = 'none'; // Outer grid container handles this
                 }
+
                 if ((r + 1) % currentGame.boxRows === 0 && r !== size - 1) {
                     input.style.borderBottom = '3px solid var(--border-color)';
+                } else if (r === size - 1) {
+                    input.style.borderBottom = 'none'; // Outer grid container handles this
                 }
 
                 // Setup Readonly (Pre-filled) vs Empty Cells
