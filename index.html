@@ -3,166 +3,359 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Math & Symmetry Hub</title>
+    <title>Math & Symmetry Hub | Teacher Quan Nguyen</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%AA%9E%3C/text%3E%3C/svg%3E">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #2c3e50;
-            --secondary: #3498db;
-            --bg: #f4f7f6;
+            --coral: #FF6B6B;
+            --coral-deep: #E14E56;
+            --teal: #4ECDC4;
+            --teal-deep: #2FA79E;
+            --purple: #A78BFA;
+            --purple-deep: #7C5CE0;
+            --green: #6BCB77;
+            --green-deep: #48A857;
+            --yellow: #FFD93D;
+            --ink: #2D3142;
+            --muted: #667085;
+            --bg-top: #EAF6FF;
+            --bg-bottom: #F5F0FF;
             --card-bg: #ffffff;
-            --text: #333333;
         }
 
+        * { box-sizing: border-box; }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
+            font-family: 'Quicksand', system-ui, sans-serif;
+            background: linear-gradient(180deg, var(--bg-top) 0%, var(--bg-bottom) 100%);
+            color: var(--ink);
             margin: 0;
             padding: 0;
             line-height: 1.6;
+            position: relative;
+            overflow-x: hidden;
         }
 
+        /* soft ambient color blobs in the corners of the page */
+        body::before, body::after {
+            content: "";
+            position: fixed;
+            width: 480px;
+            height: 480px;
+            border-radius: 50%;
+            filter: blur(70px);
+            opacity: .25;
+            z-index: -1;
+        }
+        body::before { background: var(--yellow); top: -160px; left: -160px; }
+        body::after { background: var(--teal); bottom: -160px; right: -160px; }
+
+        a { color: inherit; }
+
+        /* ---------- HEADER ---------- */
         header {
-            background-color: var(--primary);
+            position: relative;
+            overflow: hidden;
+            background: linear-gradient(135deg, var(--teal-deep), var(--purple-deep));
             color: white;
-            padding: 40px 20px;
+            padding: 46px 20px 56px;
             text-align: center;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-radius: 0 0 40px 40px;
+            box-shadow: 0 10px 25px rgba(45, 49, 66, 0.15);
+        }
+
+        .header-inner { position: relative; z-index: 2; }
+
+        .badge {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            border: 1.5px solid rgba(255,255,255,0.5);
+            backdrop-filter: blur(2px);
+            padding: 8px 20px;
+            border-radius: 999px;
+            font-family: 'Baloo 2', sans-serif;
+            font-weight: 600;
+            font-size: 0.95rem;
+            letter-spacing: .2px;
         }
 
         header h1 {
-            margin: 0;
-            font-size: 2.5rem;
-            letter-spacing: 1px;
+            font-family: 'Baloo 2', sans-serif;
+            margin: 18px 0 0;
+            font-size: 2.6rem;
+            font-weight: 800;
+            text-shadow: 0 3px 0 rgba(0,0,0,0.12);
         }
 
-        header p {
-            margin: 10px 0 0;
-            font-size: 1.2rem;
-            opacity: 0.9;
+        .mascot { width: 260px; max-width: 70vw; height: auto; margin: 14px auto 6px; display: block; }
+
+        header p.subtitle {
+            margin: 6px auto 0;
+            font-size: 1.15rem;
+            font-weight: 500;
+            color: rgba(255,255,255,0.95);
+            text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+            max-width: 480px;
         }
 
+        /* floating confetti shapes inside the header */
+        .shape { position: absolute; z-index: 1; opacity: .5; animation: float 6s ease-in-out infinite; }
+        .shape-circle { border-radius: 50%; }
+        .shape-diamond { border-radius: 8px; transform: rotate(45deg); }
+        .shape-triangle { clip-path: polygon(50% 0%, 0% 100%, 100% 100%); }
+        .shape-star { clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%); }
+
+        .s1 { top: 12%; left: 8%;  width: 26px; height: 26px; background: var(--yellow); animation-duration: 5.5s; }
+        .s2 { top: 65%; left: 14%; width: 20px; height: 20px; background: var(--coral); animation-duration: 7s; animation-delay: -2s; }
+        .s3 { top: 20%; right: 10%; width: 30px; height: 30px; background: var(--green); animation-duration: 6.5s; animation-delay: -1s; }
+        .s4 { top: 70%; right: 16%; width: 22px; height: 22px; background: var(--yellow); animation-duration: 8s; animation-delay: -3s; }
+        .s5 { top: 42%; left: 3%;  width: 18px; height: 18px; background: white; opacity: .6; animation-duration: 5s; animation-delay: -1.5s; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-16px) rotate(10deg); }
+        }
+
+        /* ---------- MAIN ---------- */
         .container {
             max-width: 1200px;
-            margin: 40px auto;
-            padding: 0 20px;
+            margin: 0 auto;
+            padding: 50px 20px 30px;
         }
 
-        /* Responsive Grid Layout */
+        .kicker {
+            display: block;
+            width: fit-content;
+            margin: 0 auto 34px;
+            background: var(--yellow);
+            color: var(--ink);
+            font-family: 'Baloo 2', sans-serif;
+            font-weight: 700;
+            font-size: 1.1rem;
+            padding: 10px 24px;
+            border-radius: 999px;
+            box-shadow: 0 4px 0 rgba(0,0,0,0.08);
+        }
+
         .grid {
             display: grid;
-            /* This line makes it responsive: cards auto-fit the screen width */
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 32px;
         }
 
-        /* Card Design */
+        /* ---------- CARDS ---------- */
         .card {
-            background-color: var(--card-bg);
-            border-radius: 12px;
-            padding: 30px;
-            box-shadow: 0 8px 15px rgba(0,0,0,0.05);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            background: var(--card-bg);
+            border-radius: 28px;
+            padding: 34px 26px 30px;
+            box-shadow: 0 6px 0 var(--accent-deep), 0 10px 22px rgba(45,49,66,0.08);
+            transition: transform .25s cubic-bezier(.34,1.56,.64,1), box-shadow .25s ease;
             display: flex;
             flex-direction: column;
             align-items: center;
             text-align: center;
-            border-top: 5px solid var(--secondary);
         }
 
         .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 25px rgba(0,0,0,0.1);
+            transform: translateY(-6px);
+            box-shadow: 0 10px 0 var(--accent-deep), 0 18px 28px rgba(45,49,66,0.12);
         }
 
-        .icon {
-            font-size: 3rem;
-            margin-bottom: 15px;
+        /* rotate accent colors automatically so new cards just work */
+        .grid .card:nth-of-type(4n+1) { --accent: var(--coral);  --accent-deep: var(--coral-deep); }
+        .grid .card:nth-of-type(4n+2) { --accent: var(--teal);   --accent-deep: var(--teal-deep); }
+        .grid .card:nth-of-type(4n+3) { --accent: var(--purple); --accent-deep: var(--purple-deep); }
+        .grid .card:nth-of-type(4n+4) { --accent: var(--green);  --accent-deep: var(--green-deep); }
+
+        .icon-badge {
+            width: 84px;
+            height: 84px;
+            border-radius: 50%;
+            background: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.4rem;
+            box-shadow: 0 5px 0 rgba(0,0,0,0.08);
+            transform: rotate(-4deg);
+            transition: transform .25s ease;
+            margin-bottom: 16px;
         }
+        .card:hover .icon-badge { transform: rotate(5deg) scale(1.08); }
 
         .card h2 {
-            margin: 0 0 15px;
-            color: var(--primary);
-            font-size: 1.5rem;
+            font-family: 'Baloo 2', sans-serif;
+            margin: 0 0 12px;
+            color: var(--ink);
+            font-size: 1.4rem;
+            font-weight: 700;
         }
 
         .card p {
-            color: #666;
-            margin-bottom: 25px;
-            flex-grow: 1; /* Pushes the button to the bottom evenly */
+            color: var(--muted);
+            margin: 0 0 24px;
+            flex-grow: 1;
+            font-size: 1rem;
         }
 
         .btn {
-            background-color: var(--secondary);
+            background: var(--accent-deep);
             color: white;
             text-decoration: none;
-            padding: 12px 25px;
-            border-radius: 25px;
-            font-weight: bold;
-            transition: background-color 0.2s;
-            width: 80%;
+            padding: 13px 28px;
+            border-radius: 999px;
+            font-family: 'Baloo 2', sans-serif;
+            font-weight: 700;
+            font-size: 1rem;
+            box-shadow: 0 4px 0 rgba(0,0,0,0.18);
+            transition: transform .15s ease, box-shadow .15s ease;
+            display: inline-block;
+        }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 0 rgba(0,0,0,0.18); }
+        .btn:active { transform: translateY(2px); box-shadow: 0 1px 0 rgba(0,0,0,0.18); }
+
+        a:focus-visible, .btn:focus-visible {
+            outline: 3px solid var(--ink);
+            outline-offset: 3px;
         }
 
-        .btn:hover {
-            background-color: #2980b9;
-        }
-
-        /* Style for future empty cards */
+        /* optional style for a card that isn't ready to play yet — */
+        /* just add class="card future" to any card block below     */
         .card.future {
-            border-top: 5px solid #bdc3c7;
-            opacity: 0.7;
+            box-shadow: none;
+            border: 3px dashed #C9D1DC;
+            opacity: .8;
         }
-        .card.future .btn {
-            background-color: #bdc3c7;
-            pointer-events: none; /* Disables clicking */
+        .card.future .icon-badge { background: #E4E9F0; box-shadow: none; }
+        .card.future .btn { background: #C9D1DC; box-shadow: none; pointer-events: none; cursor: default; }
+
+        footer {
+            text-align: center;
+            padding: 30px 20px 50px;
+            color: var(--muted);
+            font-size: .95rem;
+        }
+        footer strong { color: var(--ink); font-family: 'Baloo 2', sans-serif; }
+
+        @media (max-width: 480px) {
+            header h1 { font-size: 2rem; }
+            header p.subtitle { font-size: 1rem; }
         }
 
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation: none !important; transition: none !important; }
+        }
     </style>
 </head>
 <body>
 
     <header>
-        <h1>Math & Symmetry Hub</h1>
-        <p>Interactive tools and games to explore geometry</p>
+        <div class="shape shape-circle s1"></div>
+        <div class="shape shape-star s3"></div>
+        <div class="shape shape-triangle s2"></div>
+        <div class="shape shape-diamond s4"></div>
+        <div class="shape shape-circle s5"></div>
+
+        <div class="header-inner">
+            <span class="badge">🧑‍🏫 Presented by Teacher Quan Nguyen</span>
+            <h1>Math &amp; Symmetry Hub</h1>
+
+            <!-- mascot: two mirror-image characters, showing what "symmetry" means -->
+            <svg class="mascot" viewBox="0 0 320 160" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <line x1="160" y1="8" x2="160" y2="152" stroke="#ffffff" stroke-width="3" stroke-dasharray="6 9" opacity="0.85"/>
+                <g>
+                    <circle cx="95" cy="85" r="52" fill="#FFD93D"/>
+                    <ellipse cx="148" cy="58" rx="10" ry="22" fill="#FFD93D" transform="rotate(-25 148 58)"/>
+                    <circle cx="78" cy="76" r="8" fill="#2D3142"/>
+                    <circle cx="112" cy="76" r="8" fill="#2D3142"/>
+                    <circle cx="75.5" cy="73.5" r="2.6" fill="#ffffff"/>
+                    <circle cx="109.5" cy="73.5" r="2.6" fill="#ffffff"/>
+                    <path d="M70 99 Q95 116 120 99" stroke="#2D3142" stroke-width="5" fill="none" stroke-linecap="round"/>
+                    <circle cx="58" cy="93" r="8" fill="#FF6B6B" opacity="0.5"/>
+                    <circle cx="132" cy="93" r="8" fill="#FF6B6B" opacity="0.5"/>
+                    <polygon points="150,36 152.9,42.9 159.5,42.9 153.8,47.9 155.9,55.5 150,50.8 144.1,55.5 146.2,47.9 140.5,42.9 147.1,42.9" fill="#4ECDC4" stroke="#2D3142" stroke-width="1.2"/>
+                </g>
+                <g transform="translate(320,0) scale(-1,1)">
+                    <circle cx="95" cy="85" r="52" fill="#FFD93D"/>
+                    <ellipse cx="148" cy="58" rx="10" ry="22" fill="#FFD93D" transform="rotate(-25 148 58)"/>
+                    <circle cx="78" cy="76" r="8" fill="#2D3142"/>
+                    <circle cx="112" cy="76" r="8" fill="#2D3142"/>
+                    <circle cx="75.5" cy="73.5" r="2.6" fill="#ffffff"/>
+                    <circle cx="109.5" cy="73.5" r="2.6" fill="#ffffff"/>
+                    <path d="M70 99 Q95 116 120 99" stroke="#2D3142" stroke-width="5" fill="none" stroke-linecap="round"/>
+                    <circle cx="58" cy="93" r="8" fill="#FF6B6B" opacity="0.5"/>
+                    <circle cx="132" cy="93" r="8" fill="#FF6B6B" opacity="0.5"/>
+                    <polygon points="150,36 152.9,42.9 159.5,42.9 153.8,47.9 155.9,55.5 150,50.8 144.1,55.5 146.2,47.9 140.5,42.9 147.1,42.9" fill="#4ECDC4" stroke="#2D3142" stroke-width="1.2"/>
+                </g>
+            </svg>
+
+            <p class="subtitle">Play games, fold shapes, and discover the magic of symmetry!</p>
+        </div>
     </header>
 
     <div class="container">
+        <span class="kicker">🎯 Pick a game to start playing!</span>
+
         <div class="grid">
-            
+
             <!-- CARD 1: Symmetry Defense Game -->
             <div class="card">
-                <div class="icon">🪙</div>
+                <div class="icon-badge">🪙</div>
                 <h2>Symmetry Defense</h2>
-                <p>A two-player strategy game. Place and move pennies on a 4x4 grid to create or block lines of symmetry.</p>
-                <a href="symmetry-defense.html" class="btn">Play Game</a>
+                <p>Battle a friend! Place and slide coins on a 4×4 grid to build lines of symmetry — or block theirs.</p>
+                <a href="symmetry-defense.html" class="btn">Play Now</a>
             </div>
 
             <!-- CARD 2: Folding Platform -->
             <div class="card">
-                <div class="icon">🦋</div>
+                <div class="icon-badge">🦋</div>
                 <h2>Symmetry Folding</h2>
-                <p>An interactive sandbox. Draw shapes, plot custom reflection lines, and fold them to test for symmetry.</p>
-                <a href="reflectional symmetry.html" class="btn">Launch Tool</a>
+                <p>Doodle a wacky shape, drop in a mirror line, then fold the page to see if it matches perfectly.</p>
+                <a href="reflectional symmetry.html" class="btn">Start Folding</a>
             </div>
 
-            <!-- CARD 3: Placeholder for later -->
+            <!-- CARD 3: Multiplayer game -->
             <div class="card">
-                <div class="icon">➕</div>
-                <h2>Multiplayer game</h2>
-                <p>More interactive math games and geometric tools will be added here in the future.</p>
-                <a href="Multiplayer_SD.html" class="btn">Lets play</a>
+                <div class="icon-badge">🎮</div>
+                <h2>Multiplayer Showdown</h2>
+                <p>Challenge a friend to Symmetry Defense and play together in real time.</p>
+                <a href="Multiplayer_SD.html" class="btn">Play Together</a>
             </div>
 
-            <!-- CARD 4: Placeholder for later -->
+            <!-- CARD 4: Sudoku -->
             <div class="card">
-                <div class="icon">➕</div>
-                <h2>Sudoku</h2>
-                <p>More interactive math games and geometric tools will be added here in the future.</p>
-                <a href="sudoku.html" class="btn">Lets play</a>
+                <div class="icon-badge">🧩</div>
+                <h2>Sudoku Puzzles</h2>
+                <p>Fill the grid, flex your brain, and crack number puzzles from easy to expert.</p>
+                <a href="sudoku.html" class="btn">Solve Puzzles</a>
             </div>
+
+            <!--
+                ADD MORE GAMES HERE!
+                Copy one whole <div class="card"> ... </div> block from above,
+                then just change the emoji, title, description and href.
+                New cards automatically get the next color in the rainbow rotation. ✨
+
+                Not ready to launch yet? Add a "future" class for a dashed
+                "coming soon" look, like this:
+
+                <div class="card future">
+                    <div class="icon-badge">🌟</div>
+                    <h2>New Game Title</h2>
+                    <p>A short, fun description of what this game or tool does.</p>
+                    <a href="your-file.html" class="btn">Coming Soon</a>
+                </div>
+            -->
 
         </div>
     </div>
+
+    <footer>
+        Made with 💙 by <strong>Teacher Quan Nguyen</strong> · More games coming soon!
+    </footer>
 
 </body>
 </html>
