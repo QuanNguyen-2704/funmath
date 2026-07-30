@@ -3,139 +3,292 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive Symmetry Explorer - Hover Guides</title>
+    <title>Interactive Symmetry Explorer | Math Adventure Hub</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%AA%9E%3C/text%3E%3C/svg%3E">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --coral: #FF6B6B;   --coral-deep: #E14E56;
+            --teal: #4ECDC4;    --teal-deep: #2FA79E;
+            --purple: #A78BFA;  --purple-deep: #7C5CE0;
+            --green: #6BCB77;   --green-deep: #48A857;
+            --yellow: #FFD93D;
+            --ink: #2D3142;
+            --muted: #667085;
+            --bg-top: #EAF6FF;
+            --bg-bottom: #F5F0FF;
+            --card-bg: #ffffff;
+        }
+
+        * { box-sizing: border-box; }
+        
         body {
-            font-family: Arial, sans-serif;
-            background-color: #dcdcdc;
+            font-family: 'Quicksand', system-ui, sans-serif;
+            background: linear-gradient(180deg, var(--bg-top) 0%, var(--bg-bottom) 100%);
+            color: var(--ink);
             margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* Ambient Background Blobs */
+        body::before, body::after {
+            content: "";
+            position: fixed;
+            width: 480px;
+            height: 480px;
+            border-radius: 50%;
+            filter: blur(70px);
+            opacity: .25;
+            z-index: -1;
+        }
+        body::before { background: var(--purple); top: -100px; left: -150px; }
+        body::after { background: var(--teal); bottom: -100px; right: -150px; }
+
+        /* ---------- HEADER ---------- */
+        header {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            padding: 15px 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 15px rgba(45, 49, 66, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .back-btn {
+            text-decoration: none;
+            color: var(--ink);
+            font-family: 'Baloo 2', sans-serif;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: white;
+            padding: 8px 20px;
+            border-radius: 999px;
+            box-shadow: 0 4px 0 rgba(45, 49, 66, 0.1);
+            transition: transform 0.15s, box-shadow 0.15s;
+        }
+        .back-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 0 rgba(45, 49, 66, 0.1); }
+        .back-btn:active { transform: translateY(2px); box-shadow: 0 0 0 rgba(45, 49, 66, 0.1); }
+        
+        header h1 {
+            font-family: 'Baloo 2', sans-serif;
+            margin: 0;
+            font-size: 1.6rem;
+            color: var(--teal-deep);
+        }
+
+        /* ---------- APP CONTAINER ---------- */
+        .app-wrapper {
+            flex: 1;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            padding: 20px;
         }
+
         .app-container {
-            background-color: #f5f5f5;
-            border: 1px solid #aaa;
-            border-radius: 8px;
-            width: 900px;
-            height: 580px;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            background-color: var(--card-bg);
+            border-radius: 30px;
+            width: 100%;
+            max-width: 950px;
+            box-shadow: 0 10px 30px rgba(45,49,66,0.08);
             display: flex;
             overflow: hidden;
+            border: 4px solid white;
         }
-        /* Sidebar Menu Styles */
+
+        /* ---------- SIDEBAR MENU ---------- */
         .sidebar {
-            background-color: #2c3e50;
-            width: 200px;
-            padding: 20px 0;
+            background: linear-gradient(180deg, #F8FAFC 0%, #F1F5F9 100%);
+            width: 240px;
+            padding: 25px 15px;
             display: flex;
             flex-direction: column;
-            color: white;
+            border-right: 2px solid #E2E8F0;
+            overflow-y: auto;
+            max-height: 600px;
         }
+
         .sidebar h3 {
+            font-family: 'Baloo 2', sans-serif;
             text-align: center;
-            margin-top: 0;
-            margin-bottom: 20px;
-            font-size: 18px;
+            margin: 0 0 15px;
+            font-size: 1.2rem;
+            color: var(--muted);
+            text-transform: uppercase;
             letter-spacing: 1px;
-            color: #ecf0f1;
         }
+
         .menu-btn {
-            background: none;
-            border: none;
-            color: #bdc3c7;
-            padding: 12px 20px;
-            text-align: left;
-            font-size: 16px;
+            background: white;
+            border: 2px solid transparent;
+            color: var(--ink);
+            font-family: 'Baloo 2', sans-serif;
+            font-weight: 600;
+            font-size: 1rem;
+            padding: 10px 15px;
+            margin-bottom: 8px;
+            border-radius: 12px;
             cursor: pointer;
-            transition: 0.2s;
-            border-left: 4px solid transparent;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            text-align: left;
         }
-        .menu-btn:hover {
-            background-color: #34495e;
-            color: white;
-        }
-        .menu-btn.active {
-            background-color: #34495e;
-            color: white;
-            border-left: 4px solid #4CAF50;
-            font-weight: bold;
-        }
+        .menu-btn:hover { transform: translateX(4px); border-color: var(--teal); }
         
-        /* Main Content Styles */
+        .menu-btn.active {
+            background: var(--teal);
+            color: white;
+            box-shadow: 0 4px 10px rgba(78, 205, 196, 0.3);
+            border-color: var(--teal);
+            transform: translateX(4px);
+        }
+
+        .divider { height: 2px; background: #E2E8F0; margin: 15px 10px; border-radius: 2px; }
+
+        /* ---------- MAIN CONTENT ---------- */
         .main-content {
             flex-grow: 1;
-            padding: 20px;
+            padding: 30px;
             display: flex;
             flex-direction: column;
             align-items: center;
             position: relative;
         }
+
         .instructions {
-            background-color: #e8f5e9;
-            padding: 12px;
-            border-radius: 4px;
-            border: 1px solid #c8e6c9;
-            margin-bottom: 20px;
+            background-color: var(--bg-top);
+            padding: 15px 20px;
+            border-radius: 16px;
+            margin-bottom: 25px;
             width: 100%;
             text-align: center;
-            box-sizing: border-box;
-            color: #2e7d32;
-            font-size: 14px;
-            line-height: 1.5;
+            color: var(--ink);
+            font-size: 1rem;
+            font-weight: 500;
+            border: 2px dashed rgba(78, 205, 196, 0.4);
         }
+
         canvas {
-            background-color: white;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-shadow: inset 0 0 10px rgba(0,0,0,0.05);
+            background-color: #FAFCFF;
+            border-radius: 20px;
+            box-shadow: inset 0 4px 15px rgba(0,0,0,0.03);
             cursor: default;
+            max-width: 100%;
+            border: 2px solid #E2E8F0;
         }
+
         .slider-container {
-            margin-top: 20px;
+            margin-top: 25px;
+            width: 100%;
+            max-width: 400px;
             text-align: center;
-            width: 80%;
-            background: white;
-            padding: 15px;
-            border-radius: 8px;
-            border: 1px solid #ddd;
         }
+
+        .slider-container label {
+            font-family: 'Baloo 2', sans-serif;
+            font-weight: 700;
+            color: var(--muted);
+            font-size: 1.1rem;
+            display: block;
+            margin-bottom: 10px;
+        }
+
         input[type="range"] {
-            width: 90%;
+            -webkit-appearance: none;
+            width: 100%;
+            background: transparent;
+        }
+        input[type=range]:focus { outline: none; }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 12px;
             cursor: pointer;
-            margin-top: 10px;
+            background: #E2E8F0;
+            border-radius: 999px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+        }
+        input[type=range]::-webkit-slider-thumb {
+            height: 32px;
+            width: 32px;
+            border-radius: 50%;
+            background: var(--coral);
+            cursor: pointer;
+            -webkit-appearance: none;
+            margin-top: -10px;
+            box-shadow: 0 4px 10px rgba(225, 78, 86, 0.4);
+            border: 4px solid white;
+            transition: transform 0.1s;
+        }
+        input[type=range]::-webkit-slider-thumb:active { transform: scale(1.15); }
+
+        @media (max-width: 768px) {
+            .app-container { flex-direction: column; }
+            .sidebar { width: 100%; border-right: none; border-bottom: 2px solid #E2E8F0; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; padding: 15px; }
+            .sidebar h3, .divider { display: none; }
+            .menu-btn { margin: 0; text-align: center; }
         }
     </style>
 </head>
 <body>
 
-<div class="app-container">
-    <div class="sidebar" id="menu">
-        <h3>SHAPES</h3>
-        <button class="menu-btn active" data-shape="square">Square</button>
-        <button class="menu-btn" data-shape="rectangle">Rectangle</button>
-        <button class="menu-btn" data-shape="rhombus">Rhombus</button>
-        <button class="menu-btn" data-shape="parallelogram">Parallelogram</button>
-        <button class="menu-btn" data-shape="kite">Kite</button>
-        <button class="menu-btn" data-shape="trapezoid">Trapezoid</button>
-        <button class="menu-btn" data-shape="circle">Circle</button>
-    </div>
+    <header>
+        <a href="index.html" class="back-btn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+            Hub
+        </a>
+        <h1>Symmetry Folding Explorer</h1>
+        <div style="width: 80px;"></div>
+    </header>
 
-    <div class="main-content">
-        <div class="instructions">
-            <strong>1.</strong> Drag the <strong>blue and red circles</strong> to set the reflection line. (Tip: Hover over the shape to reveal hidden yellow snapping dots!)<br>
-            <strong>2.</strong> Use the slider to fold the shape. If it perfectly covers the other side, you found symmetry!
-        </div>
-        
-        <canvas id="mainCanvas" width="600" height="360"></canvas>
+    <div class="app-wrapper">
+        <div class="app-container">
+            <div class="sidebar" id="menu">
+                <h3>Standard</h3>
+                <button class="menu-btn active" data-shape="square">Square</button>
+                <button class="menu-btn" data-shape="rectangle">Rectangle</button>
+                <button class="menu-btn" data-shape="pentagon">Pentagon</button>
+                <button class="menu-btn" data-shape="hexagon">Hexagon</button>
+                <button class="menu-btn" data-shape="rhombus">Rhombus</button>
+                <button class="menu-btn" data-shape="parallelogram">Parallelogram</button>
+                <button class="menu-btn" data-shape="kite">Kite</button>
+                <button class="menu-btn" data-shape="trapezoid">Trapezoid</button>
+                <button class="menu-btn" data-shape="circle">Circle</button>
+                <div class="divider"></div>
+                <h3>Adventure</h3>
+                <button class="menu-btn" data-shape="skull">☠️ Saber Skull</button>
+                <button class="menu-btn" data-shape="wheel">⚓ Ship Wheel</button>
+            </div>
 
-        <div class="slider-container">
-            <label for="foldSlider" style="font-weight: bold; color: #333;">Drag to fold the shape over your axis:</label>
-            <input type="range" id="foldSlider" min="0" max="180" value="0">
+            <div class="main-content">
+                <div class="instructions">
+                    <strong>1.</strong> Drag the <strong>blue and red dots</strong> to set your mirror line.<br>
+                    <strong>2.</strong> Slide to fold the shape. Does it match perfectly on the other side?
+                </div>
+                
+                <canvas id="mainCanvas" width="600" height="400"></canvas>
+
+                <div class="slider-container">
+                    <label for="foldSlider">Drag to fold over the axis:</label>
+                    <input type="range" id="foldSlider" min="0" max="180" value="0">
+                </div>
+            </div>
         </div>
     </div>
-</div>
 
 <script>
     const canvas = document.getElementById('mainCanvas');
@@ -145,173 +298,231 @@
 
     let foldAngleDeg = 0;
     let currentShapeKey = 'square';
-    let currentPoints = [];
-    let axis = { x1: 300, y1: 50, x2: 300, y2: 310 }; 
+    let axis = { x1: 300, y1: 50, x2: 300, y2: 350 }; 
     let dragHandle = null;
-    
-    // Variables to track mouse position for the hover effect
     let mouseX = -100;
     let mouseY = -100;
 
-    // Generate circle points
-    function generateCirclePoints(cx, cy, r) {
-        let pts = [];
-        for(let i = 0; i < 360; i += 5) {
-            pts.push({x: cx + r * Math.cos(i * Math.PI / 180), y: cy + r * Math.sin(i * Math.PI / 180)});
+    // Helper: Style Manager for Shapes
+    function applyStyle(ctx, type) {
+        if (type === 'ghost') {
+            ctx.fillStyle = 'rgba(200, 210, 220, 0.3)';
+            ctx.strokeStyle = 'rgba(150, 160, 170, 0.4)';
+            ctx.lineWidth = 2;
+            ctx.setLineDash([6, 6]);
+        } else if (type === 'fixed') {
+            ctx.fillStyle = 'rgba(78, 205, 196, 0.85)'; // Teal
+            ctx.strokeStyle = '#2FA79E';
+            ctx.lineWidth = 4;
+            ctx.setLineDash([]);
+        } else if (type === 'fold') {
+            let op = 0.5 + (foldAngleDeg / 180) * 0.45;
+            ctx.fillStyle = `rgba(255, 107, 107, ${op})`; // Coral
+            ctx.strokeStyle = '#E14E56';
+            ctx.lineWidth = 4;
+            ctx.setLineDash([]);
         }
-        return pts;
     }
 
-    // Define full polygons and their recommended symmetry guide lines
+    // Advanced Data Structure storing Canvas drawing logic instead of strict arrays
     const shapesData = {
-        'square': {
-            points: [
-                {x: 200, y: 80}, {x: 400, y: 80}, {x: 400, y: 280}, {x: 200, y: 280}
-            ],
+        square: {
             guides: [
-                {x1: 300, y1: 50, x2: 300, y2: 310}, // Vertical
-                {x1: 170, y1: 180, x2: 430, y2: 180}, // Horizontal
-                {x1: 170, y1: 50, x2: 430, y2: 310}, // Diagonal 1
-                {x1: 430, y1: 50, x2: 170, y2: 310}  // Diagonal 2
-            ]
-        },
-        'rectangle': {
-            points: [
-                {x: 150, y: 105}, {x: 450, y: 105}, {x: 450, y: 255}, {x: 150, y: 255}
+                {x1: 300, y1: 50, x2: 300, y2: 350}, {x1: 150, y1: 200, x2: 450, y2: 200},
+                {x1: 150, y1: 50, x2: 450, y2: 350}, {x1: 450, y1: 50, x2: 150, y2: 350}
             ],
-            guides: [
-                {x1: 300, y1: 75, x2: 300, y2: 285}, // Vertical
-                {x1: 120, y1: 180, x2: 480, y2: 180} // Horizontal
-            ]
+            draw: (ctx, type) => {
+                ctx.beginPath(); ctx.rect(-100, -100, 200, 200);
+                applyStyle(ctx, type); ctx.fill(); ctx.stroke();
+            }
         },
-        'rhombus': {
-            // Flattened Rhombus
-            points: [
-                {x: 300, y: 100}, {x: 500, y: 180}, {x: 300, y: 260}, {x: 100, y: 180}
+        rectangle: {
+            guides: [
+                {x1: 300, y1: 80, x2: 300, y2: 320}, {x1: 100, y1: 200, x2: 500, y2: 200}
             ],
-            guides: [
-                {x1: 300, y1: 70, x2: 300, y2: 290}, // Vertical
-                {x1: 70, y1: 180, x2: 530, y2: 180}  // Horizontal
-            ]
+            draw: (ctx, type) => {
+                ctx.beginPath(); ctx.rect(-150, -80, 300, 160);
+                applyStyle(ctx, type); ctx.fill(); ctx.stroke();
+            }
         },
-        'parallelogram': {
-            points: [
-                {x: 170, y: 100}, {x: 430, y: 100}, {x: 470, y: 260}, {x: 210, y: 260}
+        pentagon: {
+            guides: [
+                {x1: 300, y1: 40, x2: 300, y2: 360}
             ],
-            guides: [] // Parallelogram has NO lines of reflection symmetry
+            draw: (ctx, type) => {
+                ctx.beginPath();
+                ctx.moveTo(0, -100); ctx.lineTo(95, -31); ctx.lineTo(59, 81); ctx.lineTo(-59, 81); ctx.lineTo(-95, -31); ctx.closePath();
+                applyStyle(ctx, type); ctx.fill(); ctx.stroke();
+            }
         },
-        'kite': {
-            points: [
-                {x: 300, y: 30}, {x: 420, y: 130}, {x: 300, y: 330}, {x: 180, y: 130}
+        hexagon: {
+            guides: [
+                {x1: 300, y1: 40, x2: 300, y2: 360}, {x1: 150, y1: 200, x2: 450, y2: 200},
+                {x1: 213, y1: 50, x2: 387, y2: 350}, {x1: 387, y1: 50, x2: 213, y2: 350}
             ],
-            guides: [
-                {x1: 300, y1: 10, x2: 300, y2: 350} // Vertical only
-            ]
+            draw: (ctx, type) => {
+                ctx.beginPath();
+                ctx.moveTo(0, -100); ctx.lineTo(87, -50); ctx.lineTo(87, 50); ctx.lineTo(0, 100); ctx.lineTo(-87, 50); ctx.lineTo(-87, -50); ctx.closePath();
+                applyStyle(ctx, type); ctx.fill(); ctx.stroke();
+            }
         },
-        'trapezoid': {
-            points: [
-                {x: 230, y: 100}, {x: 370, y: 100}, {x: 470, y: 280}, {x: 130, y: 280}
+        rhombus: {
+            guides: [
+                {x1: 300, y1: 80, x2: 300, y2: 320}, {x1: 100, y1: 200, x2: 500, y2: 200}
             ],
-            guides: [
-                {x1: 300, y1: 70, x2: 300, y2: 310} // Vertical only
-            ]
+            draw: (ctx, type) => {
+                ctx.beginPath();
+                ctx.moveTo(0, -90); ctx.lineTo(130, 0); ctx.lineTo(0, 90); ctx.lineTo(-130, 0); ctx.closePath();
+                applyStyle(ctx, type); ctx.fill(); ctx.stroke();
+            }
         },
-        'circle': {
-            points: generateCirclePoints(300, 180, 110),
+        parallelogram: {
+            guides: [], // No lines of symmetry
+            draw: (ctx, type) => {
+                ctx.beginPath();
+                ctx.moveTo(-100, -70); ctx.lineTo(60, -70); ctx.lineTo(100, 70); ctx.lineTo(-60, 70); ctx.closePath();
+                applyStyle(ctx, type); ctx.fill(); ctx.stroke();
+            }
+        },
+        kite: {
+            guides: [ {x1: 300, y1: 30, x2: 300, y2: 370} ],
+            draw: (ctx, type) => {
+                ctx.beginPath();
+                ctx.moveTo(0, -120); ctx.lineTo(80, -20); ctx.lineTo(0, 120); ctx.lineTo(-80, -20); ctx.closePath();
+                applyStyle(ctx, type); ctx.fill(); ctx.stroke();
+            }
+        },
+        trapezoid: {
+            guides: [ {x1: 300, y1: 80, x2: 300, y2: 320} ],
+            draw: (ctx, type) => {
+                ctx.beginPath();
+                ctx.moveTo(-70, -80); ctx.lineTo(70, -80); ctx.lineTo(120, 80); ctx.lineTo(-120, 80); ctx.closePath();
+                applyStyle(ctx, type); ctx.fill(); ctx.stroke();
+            }
+        },
+        circle: {
             guides: [
-                {x1: 300, y1: 40, x2: 300, y2: 320}, // Vertical
-                {x1: 160, y1: 180, x2: 440, y2: 180}, // Horizontal
-                {x1: 200, y1: 80, x2: 400, y2: 280}, // Diagonal 1
-                {x1: 400, y1: 80, x2: 200, y2: 280}  // Diagonal 2
-            ]
+                {x1: 300, y1: 40, x2: 300, y2: 360}, {x1: 140, y1: 200, x2: 460, y2: 200},
+                {x1: 187, y1: 87, x2: 413, y2: 313}, {x1: 413, y1: 87, x2: 187, y2: 313}
+            ],
+            draw: (ctx, type) => {
+                ctx.beginPath(); ctx.arc(0, 0, 100, 0, Math.PI * 2);
+                applyStyle(ctx, type); ctx.fill(); ctx.stroke();
+            }
+        },
+        skull: {
+            guides: [ {x1: 300, y1: 40, x2: 300, y2: 360} ], // Vertical only
+            draw: (ctx, type) => {
+                // Crossbones
+                ctx.beginPath();
+                ctx.moveTo(-100, -80); ctx.lineTo(100, 80);
+                ctx.moveTo(100, -80); ctx.lineTo(-100, 80);
+                ctx.lineWidth = 20; ctx.lineCap = 'round';
+                ctx.strokeStyle = type === 'ghost' ? 'rgba(150,150,150,0.3)' : (type === 'fixed' ? '#94A3B8' : '#CBD5E1');
+                if(type === 'fold') ctx.strokeStyle = `rgba(255, 107, 107, ${0.5 + (foldAngleDeg/180)*0.5})`;
+                ctx.stroke();
+
+                // Main Skull Path (includes cutouts for eyes using CCW winding rule)
+                ctx.beginPath();
+                ctx.moveTo(-60, -60);
+                ctx.bezierCurveTo(-60, -120, 60, -120, 60, -60);
+                ctx.bezierCurveTo(60, 0, 45, 10, 40, 20);
+                ctx.lineTo(30, 80); ctx.lineTo(5, 30); ctx.lineTo(-5, 30); ctx.lineTo(-30, 80); ctx.lineTo(-40, 20);
+                ctx.bezierCurveTo(-45, 10, -60, 0, -60, -60);
+                
+                // Left Eye Hole (CCW)
+                ctx.moveTo(-7, -40); ctx.arc(-25, -40, 18, 0, Math.PI * 2, true);
+                // Right Eye Hole (CCW)
+                ctx.moveTo(43, -40); ctx.arc(25, -40, 18, 0, Math.PI * 2, true);
+                // Nose Hole
+                ctx.moveTo(-5, 0); ctx.lineTo(0, -15); ctx.lineTo(5, 0); ctx.closePath();
+
+                applyStyle(ctx, type); 
+                if(type === 'fixed') ctx.fillStyle = '#E2E8F0'; // specific colors for pirate stuff
+                ctx.fill(); ctx.stroke();
+            }
+        },
+        wheel: {
+            guides: [
+                {x1: 300, y1: 40, x2: 300, y2: 360}, {x1: 140, y1: 200, x2: 460, y2: 200},
+                {x1: 187, y1: 87, x2: 413, y2: 313}, {x1: 413, y1: 87, x2: 187, y2: 313}
+            ],
+            draw: (ctx, type) => {
+                let alpha = type === 'ghost' ? 0.3 : (type === 'fixed' ? 1 : 0.6 + (foldAngleDeg/180)*0.4);
+                let color = type === 'ghost' ? '150,150,150' : (type === 'fixed' ? '72, 168, 87' : '225, 78, 86');
+                ctx.strokeStyle = `rgba(${color}, ${alpha})`;
+                ctx.fillStyle = `rgba(${color}, ${alpha})`;
+                ctx.lineCap = 'round';
+
+                // Spokes
+                ctx.beginPath();
+                for(let i=0; i<4; i++) {
+                    let a = i * Math.PI / 4;
+                    let x = Math.cos(a) * 120;
+                    let y = Math.sin(a) * 120;
+                    ctx.moveTo(-x, -y); ctx.lineTo(x, y);
+                }
+                ctx.lineWidth = 14; ctx.stroke();
+
+                // Outer Ring
+                ctx.beginPath(); ctx.arc(0,0,85, 0, Math.PI*2);
+                ctx.lineWidth = 18; ctx.stroke();
+                
+                // Inner details
+                ctx.beginPath(); ctx.arc(0,0,32, 0, Math.PI*2); ctx.fill();
+                ctx.beginPath(); ctx.arc(0,0,14, 0, Math.PI*2);
+                ctx.fillStyle = type === 'ghost' ? 'rgba(250,252,255,0)' : '#FAFCFF'; ctx.fill();
+            }
         }
     };
 
-    // Load initial shape
     function loadShape(shapeKey) {
         currentShapeKey = shapeKey;
-        currentPoints = shapesData[shapeKey].points.map(p => ({x: p.x, y: p.y}));
         foldSlider.value = 0;
         foldAngleDeg = 0;
-        axis = { x1: 300, y1: 30, x2: 300, y2: 330 }; // Default reset axis
+        axis = { x1: 300, y1: 30, x2: 300, y2: 370 }; // Default reset axis
         draw();
     }
 
-    function getDistance(x1, y1, x2, y2) {
-        return Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
-    }
+    function getDistance(x1, y1, x2, y2) { return Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2); }
 
     // --- Interactive Mouse Logic ---
     canvas.addEventListener('mousedown', (e) => {
         const rect = canvas.getBoundingClientRect();
-        mouseX = e.clientX - rect.left;
-        mouseY = e.clientY - rect.top;
+        mouseX = (e.clientX - rect.left) * (canvas.width / rect.width);
+        mouseY = (e.clientY - rect.top) * (canvas.height / rect.height);
 
-        if (getDistance(mouseX, mouseY, axis.x1, axis.y1) < 15) {
-            dragHandle = 'p1';
-            canvas.style.cursor = 'grabbing';
-        } else if (getDistance(mouseX, mouseY, axis.x2, axis.y2) < 15) {
-            dragHandle = 'p2';
-            canvas.style.cursor = 'grabbing';
-        }
+        if (getDistance(mouseX, mouseY, axis.x1, axis.y1) < 20) { dragHandle = 'p1'; }
+        else if (getDistance(mouseX, mouseY, axis.x2, axis.y2) < 20) { dragHandle = 'p2'; }
     });
 
     canvas.addEventListener('mousemove', (e) => {
         const rect = canvas.getBoundingClientRect();
-        mouseX = e.clientX - rect.left;
-        mouseY = e.clientY - rect.top;
+        mouseX = (e.clientX - rect.left) * (canvas.width / rect.width);
+        mouseY = (e.clientY - rect.top) * (canvas.height / rect.height);
         
         if (!dragHandle) {
-            if (getDistance(mouseX, mouseY, axis.x1, axis.y1) < 15 || getDistance(mouseX, mouseY, axis.x2, axis.y2) < 15) {
-                canvas.style.cursor = 'grab';
-            } else {
-                canvas.style.cursor = 'default';
-            }
+            canvas.style.cursor = (getDistance(mouseX, mouseY, axis.x1, axis.y1) < 20 || getDistance(mouseX, mouseY, axis.x2, axis.y2) < 20) ? 'grab' : 'default';
         } else {
-            let targetX = mouseX;
-            let targetY = mouseY;
-            const SNAP_RADIUS = 25;
-
-            // Check for snapping to guide points
+            canvas.style.cursor = 'grabbing';
+            let targetX = mouseX, targetY = mouseY;
+            
+            // Snapping Mechanic
             shapesData[currentShapeKey].guides.forEach(g => {
-                if (getDistance(mouseX, mouseY, g.x1, g.y1) < SNAP_RADIUS) {
-                    targetX = g.x1;
-                    targetY = g.y1;
-                } else if (getDistance(mouseX, mouseY, g.x2, g.y2) < SNAP_RADIUS) {
-                    targetX = g.x2;
-                    targetY = g.y2;
-                }
+                if (getDistance(mouseX, mouseY, g.x1, g.y1) < 30) { targetX = g.x1; targetY = g.y1; }
+                else if (getDistance(mouseX, mouseY, g.x2, g.y2) < 30) { targetX = g.x2; targetY = g.y2; }
             });
 
-            if (dragHandle === 'p1') {
-                axis.x1 = targetX;
-                axis.y1 = targetY;
-            } else if (dragHandle === 'p2') {
-                axis.x2 = targetX;
-                axis.y2 = targetY;
-            }
+            if (dragHandle === 'p1') { axis.x1 = targetX; axis.y1 = targetY; }
+            else if (dragHandle === 'p2') { axis.x2 = targetX; axis.y2 = targetY; }
         }
-        
-        draw(); // Redraws everything so the hover effect evaluates dynamically
-    });
-
-    canvas.addEventListener('mouseup', () => {
-        dragHandle = null;
-        canvas.style.cursor = 'default';
         draw();
     });
 
-    // Clear mouse tracker when leaving canvas so dots hide
-    canvas.addEventListener('mouseout', () => {
-        if (!dragHandle) {
-            mouseX = -100;
-            mouseY = -100;
-            draw();
-        }
-    });
-    // -----------------------------
+    canvas.addEventListener('mouseup', () => { dragHandle = null; canvas.style.cursor = 'default'; draw(); });
+    canvas.addEventListener('mouseout', () => { if(!dragHandle){ mouseX = -100; mouseY = -100; draw(); } });
 
-    // Menu button listeners
+    // Sidebar Interactions
     buttons.forEach(btn => {
         btn.addEventListener('click', (e) => {
             buttons.forEach(b => b.classList.remove('active'));
@@ -325,225 +536,83 @@
         draw();
     });
 
-    // --- Dynamic Polygon Splitting Math ---
-    function getSide(p, A, B) {
-        let val = (B.x - A.x) * (p.y - A.y) - (B.y - A.y) * (p.x - A.x);
-        if (Math.abs(val) < 0.0001) return 0;
-        return val;
-    }
-
-    function getIntersection(p1, p2, A, B) {
-        const x1 = p1.x, y1 = p1.y, x2 = p2.x, y2 = p2.y;
-        const x3 = A.x, y3 = A.y, x4 = B.x, y4 = B.y;
-        const denom = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4);
-        if (Math.abs(denom) < 0.0001) return null; 
-        const t = ((x1 - x3) * (y3 - y4) - (y1 - y3) * (x3 - x4)) / denom;
-        return { x: x1 + t * (x2 - x1), y: y1 + t * (y2 - y1) };
-    }
-
-    function getCenter(poly) {
-        if (!poly || poly.length === 0) return null;
-        let sumX = 0, sumY = 0;
-        for (let p of poly) { sumX += p.x; sumY += p.y; }
-        return { x: sumX / poly.length, y: sumY / poly.length };
-    }
-
-    function removeDuplicates(poly) {
-        if (!poly || poly.length === 0) return [];
-        let res = [poly[0]];
-        for (let i = 1; i < poly.length; i++) {
-            let prev = res[res.length - 1];
-            let curr = poly[i];
-            if (Math.abs(prev.x - curr.x) > 0.01 || Math.abs(prev.y - curr.y) > 0.01) {
-                res.push(curr);
-            }
-        }
-        return res;
-    }
-
-    function splitShape(points, axis) {
-        let poly1 = [];
-        let poly2 = [];
-        const A = {x: axis.x1, y: axis.y1};
-        const B = {x: axis.x2, y: axis.y2};
-        let n = points.length;
-
-        if(n === 0) return { foldPoly: [], fixedPoly: [] };
-
-        for (let i = 0; i < n; i++) {
-            let curr = points[i];
-            let next = points[(i + 1) % n];
-            
-            let currSide = getSide(curr, A, B);
-            let nextSide = getSide(next, A, B);
-            
-            if (currSide >= 0) poly1.push(curr);
-            if (currSide <= 0) poly2.push(curr);
-            
-            if ((currSide > 0 && nextSide < 0) || (currSide < 0 && nextSide > 0)) {
-                let inter = getIntersection(curr, next, A, B);
-                if (inter) {
-                    poly1.push(inter);
-                    poly2.push(inter);
-                }
-            }
-        }
-
-        poly1 = removeDuplicates(poly1);
-        poly2 = removeDuplicates(poly2);
-
-        let c1 = getCenter(poly1);
-        let c2 = getCenter(poly2);
-        
-        if (c1 && c2) {
-            if (Math.abs(c1.x - c2.x) < 0.1) {
-                if (c1.y < c2.y) return { foldPoly: poly1, fixedPoly: poly2 };
-                else return { foldPoly: poly2, fixedPoly: poly1 };
-            } else if (c1.x < c2.x) {
-                return { foldPoly: poly1, fixedPoly: poly2 };
-            } else {
-                return { foldPoly: poly2, fixedPoly: poly1 };
-            }
-        } else if (c1) {
-            let axisCenter = {x: (A.x+B.x)/2, y: (A.y+B.y)/2}; 
-            if (c1.x < axisCenter.x) return { foldPoly: poly1, fixedPoly: [] };
-            else return { foldPoly: [], fixedPoly: poly1 };
-        } else if (c2) {
-            let axisCenter = {x: (A.x+B.x)/2, y: (A.y+B.y)/2}; 
-            if (c2.x < axisCenter.x) return { foldPoly: poly2, fixedPoly: [] };
-            else return { foldPoly: [], fixedPoly: poly2 };
-        }
-        
-        return { foldPoly: [], fixedPoly: [] };
-    }
-
-    function foldPoint(p, axis, thetaDeg) {
-        const theta = thetaDeg * (Math.PI / 180);
-        const dx = axis.x2 - axis.x1;
-        const dy = axis.y2 - axis.y1;
-        const len = Math.sqrt(dx * dx + dy * dy);
-        
-        if (len === 0) return p;
-
-        const ux = dx / len;
-        const uy = dy / len;
-        const wx = p.x - axis.x1;
-        const wy = p.y - axis.y1;
-
-        const dot = wx * ux + wy * uy;
-        const projx = dot * ux;
-        const projy = dot * uy;
-        const perpx = wx - projx;
-        const perpy = wy - projy;
-
-        const newX = axis.x1 + projx + perpx * Math.cos(theta);
-        const newY = axis.y1 + projy + perpy * Math.cos(theta);
-        
-        return {x: newX, y: newY};
-    }
-
-    function drawPolygon(points, fillColor, strokeColor, dash = []) {
-        if (!points || points.length === 0) return;
-        ctx.beginPath();
-        ctx.moveTo(points[0].x, points[0].y);
-        for (let i = 1; i < points.length; i++) {
-            ctx.lineTo(points[i].x, points[i].y);
-        }
-        ctx.closePath();
-        
-        ctx.fillStyle = fillColor;
-        ctx.fill();
-        
-        ctx.setLineDash(dash);
-        ctx.strokeStyle = strokeColor;
-        ctx.lineWidth = 2;
-        ctx.stroke();
-        ctx.setLineDash([]); 
-    }
-
-    // --- Dynamic Draw Guides (Hidden Dots) ---
+    // --- Dynamic Rendering Engine (Upgraded to Canvas Transform) ---
     function drawGuides() {
-        const guides = shapesData[currentShapeKey].guides;
-        if (!guides) return;
-        
-        guides.forEach(g => {
-            // Draw very faint dashed line
-            ctx.beginPath();
-            ctx.moveTo(g.x1, g.y1);
-            ctx.lineTo(g.x2, g.y2);
-            ctx.setLineDash([4, 4]);
-            ctx.strokeStyle = 'rgba(255, 204, 0, 0.2)'; 
-            ctx.lineWidth = 2;
-            ctx.stroke();
+        shapesData[currentShapeKey].guides.forEach(g => {
+            ctx.beginPath(); ctx.moveTo(g.x1, g.y1); ctx.lineTo(g.x2, g.y2);
+            ctx.setLineDash([4, 6]); ctx.strokeStyle = 'rgba(255, 217, 61, 0.4)'; ctx.lineWidth = 2; ctx.stroke();
             ctx.setLineDash([]);
             
-            // Draw snapping dots ONLY if hovered near them
-            drawHoverDot(g.x1, g.y1);
-            drawHoverDot(g.x2, g.y2);
+            // Draw snapping hints if hovered
+            [ {x: g.x1, y: g.y1}, {x: g.x2, y: g.y2} ].forEach(pt => {
+                if (getDistance(mouseX, mouseY, pt.x, pt.y) < 40) {
+                    ctx.beginPath(); ctx.arc(pt.x, pt.y, 8, 0, Math.PI * 2);
+                    ctx.fillStyle = '#FFD93D'; ctx.fill();
+                    ctx.strokeStyle = 'white'; ctx.lineWidth = 2; ctx.stroke();
+                }
+            });
         });
     }
 
-    function drawHoverDot(x, y) {
-        const HOVER_RADIUS = 40;
-        if (getDistance(mouseX, mouseY, x, y) < HOVER_RADIUS) {
-            ctx.beginPath();
-            ctx.arc(x, y, 7, 0, Math.PI * 2);
-            ctx.fillStyle = '#FFC107'; // Bright Yellow
-            ctx.fill();
-            ctx.strokeStyle = 'white';
-            ctx.lineWidth = 1.5;
-            ctx.stroke();
-        }
-    }
-
     function drawAxis() {
-        const dx = axis.x2 - axis.x1;
-        const dy = axis.y2 - axis.y1;
-        
-        ctx.beginPath();
-        ctx.moveTo(axis.x1 - dx * 10, axis.y1 - dy * 10);
-        ctx.lineTo(axis.x2 + dx * 10, axis.y2 + dy * 10);
-        ctx.setLineDash([8, 8]);
-        ctx.strokeStyle = '#333';
-        ctx.lineWidth = 1.5;
-        ctx.stroke();
-        ctx.setLineDash([]);
-
-        drawHandle(axis.x1, axis.y1, '#3498db'); // Blue
-        drawHandle(axis.x2, axis.y2, '#e74c3c'); // Red
+        const dx = axis.x2 - axis.x1; const dy = axis.y2 - axis.y1;
+        ctx.beginPath(); ctx.moveTo(axis.x1 - dx * 10, axis.y1 - dy * 10); ctx.lineTo(axis.x2 + dx * 10, axis.y2 + dy * 10);
+        ctx.setLineDash([8, 8]); ctx.strokeStyle = '#2D3142'; ctx.lineWidth = 2; ctx.stroke(); ctx.setLineDash([]);
+        drawHandle(axis.x1, axis.y1, '#4ECDC4'); // Teal
+        drawHandle(axis.x2, axis.y2, '#FF6B6B'); // Coral
     }
 
     function drawHandle(x, y, color) {
-        ctx.beginPath();
-        ctx.arc(x, y, 8, 0, 2 * Math.PI);
-        ctx.fillStyle = color;
-        ctx.fill();
-        ctx.strokeStyle = 'white';
-        ctx.lineWidth = 2;
-        ctx.stroke();
+        ctx.beginPath(); ctx.arc(x, y, 10, 0, 2 * Math.PI);
+        ctx.fillStyle = color; ctx.fill();
+        ctx.strokeStyle = 'white'; ctx.lineWidth = 3; ctx.stroke();
     }
 
     function draw() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        // 1. Draw Guides with Hover Logic
+        
         drawGuides();
+        
+        // Render 1: Background Ghost Silhouette
+        ctx.save();
+        ctx.translate(300, 200);
+        shapesData[currentShapeKey].draw(ctx, 'ghost');
+        ctx.restore();
 
-        // 2. Split the current shape
-        const parts = splitShape(currentPoints, axis);
+        // Calculate Axis Angle and Math logic for clipping half-planes
+        let alpha = Math.atan2(axis.y2 - axis.y1, axis.x2 - axis.x1);
 
-        // 3. Draw Original Footprint (Ghost image)
-        drawPolygon(currentPoints, 'transparent', 'rgba(150,150,150,0.5)', [5,5]);
+        // Render 2: The "Fixed" Right Side
+        ctx.save();
+        ctx.translate(axis.x1, axis.y1);
+        ctx.rotate(alpha);
+        ctx.beginPath();
+        ctx.rect(-2000, 0, 4000, 2000); // Clip to the right of the directed line
+        ctx.clip();
+        ctx.rotate(-alpha);
+        ctx.translate(-axis.x1 + 300, -axis.y1 + 200);
+        shapesData[currentShapeKey].draw(ctx, 'fixed');
+        ctx.restore();
 
-        // 4. Draw the fixed polygon (the side on the right)
-        drawPolygon(parts.fixedPoly, 'rgba(173, 216, 40, 0.6)', '#4CAF50');
+        // Render 3: The "Folded" Left Side in 3D projection
+        ctx.save();
+        ctx.translate(axis.x1, axis.y1);
+        ctx.rotate(alpha);
+        
+        // Clip to original left side BEFORE scaling
+        ctx.beginPath();
+        ctx.rect(-2000, -2000, 4000, 2000); 
+        ctx.clip();
+        
+        // Apply 3D fold stretch/squash (Orthographic projection via cos)
+        let thetaRad = foldAngleDeg * (Math.PI / 180);
+        ctx.scale(1, Math.cos(thetaRad));
+        
+        ctx.rotate(-alpha);
+        ctx.translate(-axis.x1 + 300, -axis.y1 + 200);
+        shapesData[currentShapeKey].draw(ctx, 'fold');
+        ctx.restore();
 
-        // 5. Calculate and Draw the folding polygon (the side on the left)
-        const foldedPoints = parts.foldPoly.map(p => foldPoint(p, axis, foldAngleDeg));
-        let opacity = 0.6 + (foldAngleDeg / 180) * 0.3; 
-        drawPolygon(foldedPoints, `rgba(140, 190, 20, ${opacity})`, '#388E3C');
-
-        // 6. Draw Axis handles last so they stay on top
         drawAxis();
     }
 
