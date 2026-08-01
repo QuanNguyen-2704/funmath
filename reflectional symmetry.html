@@ -120,6 +120,11 @@
             max-height: 600px;
         }
 
+        /* Custom Scrollbar for Sidebar */
+        .sidebar::-webkit-scrollbar { width: 6px; }
+        .sidebar::-webkit-scrollbar-track { background: transparent; }
+        .sidebar::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 10px; }
+
         .sidebar h3 {
             font-family: 'Baloo 2', sans-serif;
             text-align: center;
@@ -257,16 +262,21 @@
 
     <div class="app-wrapper">
         <div class="app-container">
+            <!-- Sidebar with the expanded shape library -->
             <div class="sidebar" id="menu">
                 <h3>Standard</h3>
                 <button class="menu-btn active" data-shape="square">Square</button>
                 <button class="menu-btn" data-shape="rectangle">Rectangle</button>
+                <button class="menu-btn" data-shape="isoTriangle">Isosceles Triangle</button>
+                <button class="menu-btn" data-shape="equiTriangle">Equilateral Triangle</button>
                 <button class="menu-btn" data-shape="pentagon">Pentagon</button>
                 <button class="menu-btn" data-shape="hexagon">Hexagon</button>
+                <button class="menu-btn" data-shape="octagon">Octagon</button>
                 <button class="menu-btn" data-shape="rhombus">Rhombus</button>
+                <button class="menu-btn" data-shape="isoTrapezoid">Isosceles Trapezoid</button>
+                <button class="menu-btn" data-shape="trapezoid">Normal Trapezoid</button>
                 <button class="menu-btn" data-shape="parallelogram">Parallelogram</button>
                 <button class="menu-btn" data-shape="kite">Kite</button>
-                <button class="menu-btn" data-shape="trapezoid">Trapezoid</button>
                 <button class="menu-btn" data-shape="circle">Circle</button>
                 <div class="divider"></div>
                 <h3>Adventure</h3>
@@ -304,19 +314,37 @@
     let mouseX = -100;
     let mouseY = -100;
 
-    // Helper functions to mathematically generate shape polygons
+    // --- Mathematical Shape Generators ---
+    
+    // Dynamically generates vertices for any regular polygon
     function makeRegularPoly(cx, cy, r, sides, angleOffsetDeg = -90) {
         let pts = [];
-        for(let i=0; i<sides; i++) {
+        for(let i = 0; i < sides; i++) {
             let a = (angleOffsetDeg + i * 360 / sides) * Math.PI / 180;
             pts.push({x: cx + r * Math.cos(a), y: cy + r * Math.sin(a)});
         }
         return pts;
     }
 
+    // Dynamically generates snapping lines based on angles
+    function makeGuides(cx, cy, length, anglesDeg) {
+        return anglesDeg.map(a => {
+            let rad = a * Math.PI / 180;
+            let dx = Math.cos(rad) * length;
+            let dy = Math.sin(rad) * length;
+            // Round to avoid float precision noise snapping
+            return {
+                x1: Math.round(cx - dx),
+                y1: Math.round(cy - dy),
+                x2: Math.round(cx + dx),
+                y2: Math.round(cy + dy)
+            };
+        });
+    }
+
+    // Custom Adventure Shapes
     function generateWheel(cx, cy) {
         let pts = [];
-        // Math function to create a bumpy gear/wheel single continuous line
         for (let i = 0; i < 360; i += 3) {
             let rad = i * Math.PI / 180;
             let r = 85 + 25 * Math.pow(Math.cos(8 * rad), 6);
@@ -327,80 +355,73 @@
 
     function generateSkull(cx, cy) {
         let pts = [];
-        // Top dome
-        for(let i=180; i<=360; i+=10) {
-            pts.push({x: cx + 80 * Math.cos(i * Math.PI/180), y: cy - 20 + 80 * Math.sin(i * Math.PI/180)});
-        }
-        // Right side and jaw
-        pts.push({x: cx + 80, y: cy - 20});
-        pts.push({x: cx + 60, y: cy + 40});
-        pts.push({x: cx + 35, y: cy + 40});
-        pts.push({x: cx + 35, y: cy + 90});
-        pts.push({x: cx - 35, y: cy + 90});
-        // Left side
-        pts.push({x: cx - 35, y: cy + 40});
-        pts.push({x: cx - 60, y: cy + 40});
-        pts.push({x: cx - 80, y: cy - 20});
+        for(let i=180; i<=360; i+=10) { pts.push({x: cx + 80 * Math.cos(i * Math.PI/180), y: cy - 20 + 80 * Math.sin(i * Math.PI/180)}); }
+        pts.push({x: cx + 80, y: cy - 20}, {x: cx + 60, y: cy + 40}, {x: cx + 35, y: cy + 40}, {x: cx + 35, y: cy + 90}, {x: cx - 35, y: cy + 90});
+        pts.push({x: cx - 35, y: cy + 40}, {x: cx - 60, y: cy + 40}, {x: cx - 80, y: cy - 20});
         return pts;
     }
 
-    // Define all polygons with their mathematical points and snap guides
+    // --- Core Shape Library Data ---
     const shapesData = {
         'square': {
-            points: [ {x: 200, y: 100}, {x: 400, y: 100}, {x: 400, y: 300}, {x: 200, y: 300} ],
-            guides: [
-                {x1: 300, y1: 50, x2: 300, y2: 350}, {x1: 150, y1: 200, x2: 450, y2: 200},
-                {x1: 150, y1: 50, x2: 450, y2: 350}, {x1: 450, y1: 50, x2: 150, y2: 350}
-            ]
+            points: [ {x: 180, y: 80}, {x: 420, y: 80}, {x: 420, y: 320}, {x: 180, y: 320} ],
+            guides: makeGuides(300, 200, 180, [0, 45, 90, 135])
         },
         'rectangle': {
-            points: [ {x: 150, y: 120}, {x: 450, y: 120}, {x: 450, y: 280}, {x: 150, y: 280} ],
-            guides: [ {x1: 300, y1: 70, x2: 300, y2: 330}, {x1: 100, y1: 200, x2: 500, y2: 200} ]
+            points: [ {x: 130, y: 120}, {x: 470, y: 120}, {x: 470, y: 280}, {x: 130, y: 280} ],
+            guides: makeGuides(300, 200, 180, [0, 90])
+        },
+        'isoTriangle': {
+            points: [ {x: 300, y: 60}, {x: 440, y: 300}, {x: 160, y: 300} ],
+            guides: makeGuides(300, 200, 180, [90])
+        },
+        'equiTriangle': {
+            points: makeRegularPoly(300, 215, 140, 3), // Centered for visual balance
+            guides: makeGuides(300, 215, 180, [90, 30, 150])
         },
         'pentagon': {
-            points: makeRegularPoly(300, 200, 110, 5),
-            guides: [ {x1: 300, y1: 50, x2: 300, y2: 350} ]
+            points: makeRegularPoly(300, 200, 125, 5),
+            guides: makeGuides(300, 200, 180, [18, 54, 90, 126, 162])
         },
         'hexagon': {
-            points: makeRegularPoly(300, 200, 110, 6),
-            guides: [
-                {x1: 300, y1: 50, x2: 300, y2: 350}, {x1: 150, y1: 200, x2: 450, y2: 200},
-                {x1: 205, y1: 35, x2: 395, y2: 365}, {x1: 395, y1: 35, x2: 205, y2: 365}
-            ]
+            points: makeRegularPoly(300, 200, 125, 6),
+            guides: makeGuides(300, 200, 180, [0, 30, 60, 90, 120, 150])
+        },
+        'octagon': {
+            points: makeRegularPoly(300, 200, 125, 8),
+            guides: makeGuides(300, 200, 180, [0, 22.5, 45, 67.5, 90, 112.5, 135, 157.5])
         },
         'rhombus': {
-            points: [ {x: 300, y: 100}, {x: 450, y: 200}, {x: 300, y: 300}, {x: 150, y: 200} ],
-            guides: [ {x1: 300, y1: 70, x2: 300, y2: 330}, {x1: 100, y1: 200, x2: 500, y2: 200} ]
+            points: [ {x: 300, y: 60}, {x: 460, y: 200}, {x: 300, y: 340}, {x: 140, y: 200} ],
+            guides: makeGuides(300, 200, 180, [0, 90])
         },
-        'parallelogram': {
-            points: [ {x: 180, y: 120}, {x: 420, y: 120}, {x: 460, y: 280}, {x: 220, y: 280} ],
+        'isoTrapezoid': {
+            points: [ {x: 210, y: 100}, {x: 390, y: 100}, {x: 460, y: 300}, {x: 140, y: 300} ],
+            guides: makeGuides(300, 200, 180, [90])
+        },
+        'trapezoid': { // Normal, no symmetry
+            points: [ {x: 170, y: 100}, {x: 360, y: 100}, {x: 470, y: 300}, {x: 110, y: 300} ],
+            guides: []
+        },
+        'parallelogram': { // No reflective symmetry
+            points: [ {x: 180, y: 100}, {x: 420, y: 100}, {x: 470, y: 300}, {x: 230, y: 300} ],
             guides: []
         },
         'kite': {
-            points: [ {x: 300, y: 50}, {x: 400, y: 150}, {x: 300, y: 350}, {x: 200, y: 150} ],
-            guides: [ {x1: 300, y1: 20, x2: 300, y2: 380} ]
-        },
-        'trapezoid': {
-            points: [ {x: 220, y: 120}, {x: 380, y: 120}, {x: 460, y: 280}, {x: 140, y: 280} ],
-            guides: [ {x1: 300, y1: 70, x2: 300, y2: 330} ]
+            points: [ {x: 300, y: 40}, {x: 420, y: 150}, {x: 300, y: 360}, {x: 180, y: 150} ],
+            guides: makeGuides(300, 200, 180, [90])
         },
         'circle': {
-            points: makeRegularPoly(300, 200, 110, 72),
-            guides: [
-                {x1: 300, y1: 50, x2: 300, y2: 350}, {x1: 150, y1: 200, x2: 450, y2: 200},
-                {x1: 194, y1: 94, x2: 406, y2: 306}, {x1: 406, y1: 94, x2: 194, y2: 306}
-            ]
+            points: makeRegularPoly(300, 200, 120, 72), // Looks perfectly round
+            guides: makeGuides(300, 200, 180, [0, 22.5, 45, 67.5, 90, 112.5, 135, 157.5])
         },
         'skull': {
             points: generateSkull(300, 200),
-            guides: [ {x1: 300, y1: 30, x2: 300, y2: 370} ] // Vertical only
+            guides: makeGuides(300, 200, 180, [90])
         },
         'wheel': {
             points: generateWheel(300, 200),
-            guides: [
-                {x1: 300, y1: 50, x2: 300, y2: 350}, {x1: 150, y1: 200, x2: 450, y2: 200},
-                {x1: 194, y1: 94, x2: 406, y2: 306}, {x1: 406, y1: 94, x2: 194, y2: 306}
-            ]
+            guides: makeGuides(300, 200, 180, [0, 22.5, 45, 67.5, 90, 112.5, 135, 157.5])
         }
     };
 
@@ -409,7 +430,7 @@
         currentPoints = shapesData[shapeKey].points.map(p => ({x: p.x, y: p.y}));
         foldSlider.value = 0;
         foldAngleDeg = 0;
-        axis = { x1: 300, y1: 40, x2: 300, y2: 360 }; 
+        axis = { x1: 300, y1: 30, x2: 300, y2: 370 }; // Reset Line
         draw();
     }
 
@@ -435,7 +456,7 @@
             canvas.style.cursor = 'grabbing';
             let targetX = mouseX, targetY = mouseY;
             
-            // Magnetic snapping
+            // Magnetic snapping to guides
             shapesData[currentShapeKey].guides.forEach(g => {
                 if (getDistance(mouseX, mouseY, g.x1, g.y1) < 30) { targetX = g.x1; targetY = g.y1; }
                 else if (getDistance(mouseX, mouseY, g.x2, g.y2) < 30) { targetX = g.x2; targetY = g.y2; }
@@ -450,6 +471,7 @@
     canvas.addEventListener('mouseup', () => { dragHandle = null; canvas.style.cursor = 'default'; draw(); });
     canvas.addEventListener('mouseout', () => { if(!dragHandle){ mouseX = -100; mouseY = -100; draw(); } });
 
+    // Link Sidebar Buttons
     buttons.forEach(btn => {
         btn.addEventListener('click', (e) => {
             buttons.forEach(b => b.classList.remove('active'));
@@ -464,7 +486,7 @@
     });
 
 
-    // --- Original Polygon Splitting Math Engine ---
+    // --- Core Polygon Splitting Math Engine ---
     function getSide(p, A, B) {
         let val = (B.x - A.x) * (p.y - A.y) - (B.y - A.y) * (p.x - A.x);
         if (Math.abs(val) < 0.0001) return 0;
@@ -611,16 +633,16 @@
 
         drawGuides();
 
-        // 1. Ghost Image
+        // 1. Ghost Image Silhouette
         drawPolygon(currentPoints, 'rgba(200, 210, 220, 0.2)', 'rgba(150, 160, 170, 0.4)', [6, 6], 2);
 
-        // 2. Math Slicing
+        // 2. Math Slicing Calculation
         const parts = splitShape(currentPoints, axis);
 
-        // 3. Fixed Half
+        // 3. Fixed Half (Teal)
         drawPolygon(parts.fixedPoly, 'rgba(78, 205, 196, 0.65)', '#2FA79E');
 
-        // 4. Folded Half (Math transform on individual points)
+        // 4. Folded Half (Math transform on individual points, Coral)
         const foldedPoints = parts.foldPoly.map(p => foldPoint(p, axis, foldAngleDeg));
         let opacity = 0.5 + (foldAngleDeg / 180) * 0.45; 
         drawPolygon(foldedPoints, `rgba(255, 107, 107, ${opacity})`, '#E14E56');
