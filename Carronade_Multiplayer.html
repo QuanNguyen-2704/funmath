@@ -6,10 +6,6 @@
     <title>Carronade Showdown | Math Adventure Hub</title>
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%92%A3%3C/text%3E%3C/svg%3E">
     <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Firebase App (the core Firebase SDK) -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <!-- Firebase Realtime Database -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     
     <style>
         :root {
@@ -40,172 +36,121 @@
             overflow-x: hidden;
         }
 
-        /* Top Bar */
-        .top-bar {
-            width: 100%;
-            padding: 20px;
-            text-align: left;
-            max-width: 900px;
+        /* Ambient Blobs */
+        body::before, body::after {
+            content: "";
+            position: fixed;
+            width: 480px; height: 480px;
+            border-radius: 50%;
+            filter: blur(70px); opacity: .22; z-index: -1;
         }
+        body::before { background: var(--coral); top: -160px; left: -160px; }
+        body::after { background: var(--teal); bottom: -160px; right: -160px; }
+
+        /* Top Bar */
+        .top-bar { width: 100%; padding: 20px; text-align: left; max-width: 900px; }
         .back-btn {
-            font-family: 'Baloo 2', sans-serif;
-            font-weight: 700;
-            color: var(--ink);
-            text-decoration: none;
-            background: rgba(255,255,255,0.8);
-            padding: 8px 20px;
-            border-radius: 999px;
-            box-shadow: 0 4px 10px rgba(45,49,66,0.08);
-            display: inline-flex;
-            align-items: center;
+            font-family: 'Baloo 2', sans-serif; font-weight: 700; color: var(--ink);
+            text-decoration: none; background: rgba(255,255,255,0.8);
+            padding: 8px 20px; border-radius: 999px;
+            box-shadow: 0 4px 10px rgba(45,49,66,0.08); display: inline-flex;
             transition: transform 0.2s;
         }
         .back-btn:hover { transform: translateY(-2px); background: #fff; }
 
         /* Container */
         .game-container {
-            background: var(--card-bg);
-            max-width: 800px;
-            width: 95%;
-            border-radius: 40px;
-            padding: 40px 30px;
+            background: var(--card-bg); max-width: 800px; width: 95%;
+            border-radius: 40px; padding: 40px 30px;
             box-shadow: 0 8px 0 var(--coral-deep), 0 15px 35px rgba(45,49,66,0.1);
-            text-align: center;
-            position: relative;
-            margin-bottom: 40px;
+            text-align: center; position: relative; margin-bottom: 40px;
         }
 
         h1 { font-family: 'Baloo 2', sans-serif; font-size: 2.6rem; margin: 0 0 10px; line-height: 1.2; color: var(--coral-deep); }
         p.subtitle { color: var(--muted); margin-bottom: 30px; font-size: 1.1rem; }
 
         /* Lobby UI */
-        #lobby-screen { display: block; }
-        #game-screen { display: none; }
-
         .lobby-box {
-            background: var(--bg-top);
-            border-radius: 20px;
-            padding: 30px;
-            margin-bottom: 20px;
-            border: 3px dashed var(--teal);
-        }
-
-        input.room-input {
-            font-family: 'Baloo 2', sans-serif;
-            font-size: 1.5rem;
-            text-align: center;
-            padding: 10px;
-            border-radius: 12px;
-            border: 2px solid var(--muted);
-            width: 150px;
-            margin: 10px;
-            text-transform: uppercase;
+            background: var(--bg-top); border-radius: 20px;
+            padding: 30px; margin-bottom: 20px; border: 3px dashed var(--teal);
         }
 
         .btn {
-            background: var(--teal);
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 999px;
-            font-family: 'Baloo 2', sans-serif;
-            font-weight: 700;
-            font-size: 1.2rem;
-            cursor: pointer;
-            box-shadow: 0 4px 0 var(--teal-deep);
-            transition: all 0.15s;
-            margin: 5px;
+            background: var(--teal); color: white; border: none;
+            padding: 12px 24px; border-radius: 999px;
+            font-family: 'Baloo 2', sans-serif; font-weight: 700; font-size: 1.2rem;
+            cursor: pointer; box-shadow: 0 4px 0 var(--teal-deep);
+            transition: all 0.15s; margin: 5px;
         }
         .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 0 var(--teal-deep); }
         .btn:active { transform: translateY(2px); box-shadow: 0 1px 0 var(--teal-deep); }
         .btn-coral { background: var(--coral); box-shadow: 0 4px 0 var(--coral-deep); }
         .btn-coral:hover { box-shadow: 0 6px 0 var(--coral-deep); }
-        .btn-coral:active { box-shadow: 0 1px 0 var(--coral-deep); }
+        .btn-purple { background: var(--purple); box-shadow: 0 4px 0 var(--purple-deep); }
+        .btn-purple:hover { box-shadow: 0 6px 0 var(--purple-deep); }
+
+        /* Share Room Box */
+        .room-info {
+            background: #e8f4f8; padding: 15px; border-radius: 12px;
+            border: 2px solid var(--teal); margin-bottom: 20px; text-align: center;
+        }
+        .room-info input {
+            padding: 10px; width: 90%; max-width: 400px; text-align: center;
+            border-radius: 8px; border: 1px solid var(--muted);
+            font-family: 'Quicksand'; font-weight: bold; margin-top: 10px;
+        }
+
+        /* Status & Health */
+        .status-panel {
+            background: #fff; padding: 15px; border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px;
+        }
+        #turn-indicator { font-family: 'Baloo 2'; font-size: 1.6rem; font-weight: 800; margin-bottom: 15px; }
+        .status-row { display: flex; justify-content: space-between; font-weight: bold; }
+        .health-bar-bg { width: 45%; background: #eee; border-radius: 10px; height: 20px; overflow: hidden; margin-top: 5px;}
+        .health-fill { height: 100%; transition: width 0.3s; }
+        #health-p1-fill { background: var(--coral); }
+        #health-p2-fill { background: var(--purple); }
 
         /* Game Board Area */
         .board-wrapper {
-            position: relative;
-            width: 100%;
-            height: 350px;
-            background: #EAF6FF;
-            border-radius: 20px;
-            border: 4px solid var(--teal-deep);
-            overflow: hidden;
-            margin-bottom: 20px;
+            position: relative; width: 100%; height: 350px;
+            background: #EAF6FF; border-radius: 20px;
+            border: 4px solid var(--teal-deep); overflow: hidden; margin-bottom: 20px;
         }
-
         canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 10;
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10;
         }
-
         .player-base {
-            position: absolute;
-            bottom: 20px;
-            width: 60px;
-            height: 60px;
-            z-index: 5;
+            position: absolute; bottom: 20px; width: 60px; height: 60px; z-index: 5;
         }
         #base-p1 { left: 40px; }
         #base-p2 { right: 40px; transform: scaleX(-1); }
 
-        /* Health Bars */
-        .status-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-weight: bold; }
-        .health-bar-bg { width: 45%; background: #eee; border-radius: 10px; height: 20px; overflow: hidden; }
-        .health-fill { height: 100%; background: var(--green); transition: width 0.3s; }
-        #health-p1-fill { background: var(--coral); }
-        #health-p2-fill { background: var(--purple); }
-
         /* Controls */
         .controls-panel {
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            background: #f9f9f9;
-            padding: 20px;
-            border-radius: 20px;
-            gap: 15px;
-            flex-wrap: wrap;
+            display: flex; justify-content: space-around; align-items: center;
+            background: #f9f9f9; padding: 20px; border-radius: 20px; gap: 15px; flex-wrap: wrap;
         }
-        .slider-group {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            font-weight: 600;
-        }
+        .slider-group { display: flex; flex-direction: column; align-items: center; font-weight: 600; }
         input[type=range] { width: 120px; accent-color: var(--teal); }
-        
-        /* Custom UI Modal replacing alert() */
+        .disabled { opacity: 0.5; pointer-events: none; }
+
+        /* Custom UI Modal */
         #ui-modal {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(45,49,66,0.6);
-            backdrop-filter: blur(4px);
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(45,49,66,0.6); backdrop-filter: blur(4px);
             display: flex; align-items: center; justify-content: center;
-            z-index: 1000;
-            opacity: 0; visibility: hidden;
-            transition: all 0.3s;
+            z-index: 1000; opacity: 0; visibility: hidden; transition: all 0.3s;
         }
         #ui-modal.show { opacity: 1; visibility: visible; }
         .modal-content {
-            background: white;
-            padding: 30px;
-            border-radius: 30px;
-            text-align: center;
-            box-shadow: 0 10px 0 var(--teal-deep);
-            max-width: 400px;
-            width: 90%;
-            transform: translateY(20px);
-            transition: transform 0.3s;
+            background: white; padding: 30px; border-radius: 30px;
+            text-align: center; box-shadow: 0 10px 0 var(--teal-deep);
+            max-width: 400px; width: 90%; transform: translateY(20px); transition: transform 0.3s;
         }
         #ui-modal.show .modal-content { transform: translateY(0); }
-        .modal-content h2 { font-family: 'Baloo 2'; color: var(--ink); margin-top: 0; }
-        
-        .disabled { opacity: 0.5; pointer-events: none; }
+        .modal-content h2 { font-family: 'Baloo 2'; color: var(--ink); margin-top: 0; font-size: 2rem;}
     </style>
 </head>
 <body>
@@ -220,32 +165,38 @@
 
         <!-- LOBBY SCREEN -->
         <div id="lobby-screen">
-            <div class="lobby-box">
-                <h3>Host a Game</h3>
-                <p>Create a room and share the code with a friend.</p>
-                <button class="btn btn-coral" onclick="createGame()">Create Room</button>
-                <h2 id="room-code-display" style="display:none; color: var(--coral-deep); letter-spacing: 2px;"></h2>
+            <div id="lobby-default" class="lobby-box">
+                <h2>Welcome to Multiplayer</h2>
+                <p>Create a room and share the link with a student.</p>
+                <button class="btn btn-coral" id="btn-create-room">Create New Room</button>
             </div>
             
-            <div class="lobby-box">
-                <h3>Join a Game</h3>
-                <input type="text" id="join-code" class="room-input" placeholder="CODE" maxlength="4">
-                <br>
-                <button class="btn" onclick="joinGame()">Join Room</button>
+            <div id="lobby-join" class="lobby-box" style="display: none;">
+                <h2>Room Found!</h2>
+                <p>Select your role to join the battlefield:</p>
+                <button class="btn btn-coral" id="btn-join-p1">Join as Player 1 (Left)</button>
+                <button class="btn btn-purple" id="btn-join-p2">Join as Player 2 (Right)</button>
             </div>
         </div>
 
         <!-- GAME SCREEN -->
-        <div id="game-screen">
-            <div class="status-row">
-                <div style="width: 45%; text-align: left;">
-                    Player 1 (Host) <span id="p1-hp-text">100</span> HP
-                    <div class="health-bar-bg"><div id="health-p1-fill" class="health-fill" style="width: 100%;"></div></div>
-                </div>
-                <div id="turn-indicator" style="font-family: 'Baloo 2'; font-size: 1.2rem; color: var(--teal-deep);">Waiting...</div>
-                <div style="width: 45%; text-align: right;">
-                    Player 2 (Join) <span id="p2-hp-text">100</span> HP
-                    <div class="health-bar-bg"><div id="health-p2-fill" class="health-fill" style="width: 100%; float: right;"></div></div>
+        <div id="game-screen" style="display: none;">
+            <div class="room-info">
+                <strong>Share this link to invite your opponent:</strong><br>
+                <input type="text" id="share-link" readonly>
+            </div>
+
+            <div class="status-panel">
+                <div id="turn-indicator" style="color: var(--muted);">Waiting for players...</div>
+                <div class="status-row">
+                    <div style="width: 45%; text-align: left;">
+                        Player 1 (Left): <span id="p1-hp-text">100</span> HP
+                        <div class="health-bar-bg"><div id="health-p1-fill" class="health-fill" style="width: 100%;"></div></div>
+                    </div>
+                    <div style="width: 45%; text-align: right;">
+                        Player 2 (Right): <span id="p2-hp-text">100</span> HP
+                        <div class="health-bar-bg"><div id="health-p2-fill" class="health-fill" style="width: 100%; float: right;"></div></div>
+                    </div>
                 </div>
             </div>
 
@@ -269,7 +220,7 @@
                 </svg>
             </div>
 
-            <div class="controls-panel" id="controls-panel">
+            <div class="controls-panel disabled" id="controls-panel">
                 <div class="slider-group">
                     <label>Angle: <span id="angle-val">45</span>°</label>
                     <input type="range" id="angle-slider" min="10" max="80" value="45">
@@ -278,7 +229,7 @@
                     <label>Power: <span id="power-val">50</span></label>
                     <input type="range" id="power-slider" min="20" max="100" value="50">
                 </div>
-                <button class="btn btn-coral" id="fire-btn" onclick="fireCannon()">FIRE!</button>
+                <button class="btn btn-teal" id="fire-btn">FIRE!</button>
             </div>
         </div>
     </main>
@@ -288,190 +239,190 @@
         <div class="modal-content">
             <h2 id="modal-title">Message</h2>
             <p id="modal-body">Details here.</p>
-            <button class="btn" onclick="closeModal()">Got it!</button>
+            <button class="btn" id="modal-btn-close">Got it!</button>
         </div>
     </div>
 
-    <script>
+    <!-- Firebase SDK Setup -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getDatabase, ref, set, onValue, update } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
         // ==========================================
         // 1. FIREBASE SETUP
         // ==========================================
-        // !! TEACHER QUAN: REPLACE THIS CONFIG WITH YOUR FIREBASE KEYS !!
-         const firebaseConfig = {
-  apiKey: "AIzaSyAdQTK8tSHhnla5LePBKb0EgGHUWchkNbQ",
-  authDomain: "math-bdf5e.firebaseapp.com",
-  databaseURL: "https://math-bdf5e-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "math-bdf5e",
-  storageBucket: "math-bdf5e.firebasestorage.app",
-  messagingSenderId: "515958917799",
-  appId: "1:515958917799:web:5e85a5dfabbce1e5a62982",
-  measurementId: "G-H9J3GMHCK8"
-};
-        // Initialize Firebase
-        if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
-        }
-        const db = firebase.database();
+        const firebaseConfig = {
+            apiKey: "AIzaSyAdQTK8tSHhnla5LePBKb0EgGHUWchkNbQ",
+            authDomain: "math-bdf5e.firebaseapp.com",
+            databaseURL: "https://math-bdf5e-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "math-bdf5e",
+            storageBucket: "math-bdf5e.firebasestorage.app",
+            messagingSenderId: "515958917799",
+            appId: "1:515958917799:web:5e85a5dfabbce1e5a62982",
+            measurementId: "G-H9J3GMHCK8"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
 
         // ==========================================
         // 2. GAME STATE VARIABLES
         // ==========================================
-        let myRole = null; // 'p1' (Host) or 'p2' (Joiner)
-        let roomCode = null;
-        let roomRef = null;
-        let isMyTurn = false;
+        let roomId = null;
+        let myRole = null; // 1 or 2
+        let dbRef = null;
+        let localState = null;
         
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
         let animationId;
+        window.lastShotTime = 0; // Prevent re-animating old shots
 
-        // UI Elements
+        // DOM Elements
+        const lobbyScreen = document.getElementById('lobby-screen');
+        const lobbyDefault = document.getElementById('lobby-default');
+        const lobbyJoin = document.getElementById('lobby-join');
+        const gameScreen = document.getElementById('game-screen');
+        
         const angleSlider = document.getElementById('angle-slider');
         const powerSlider = document.getElementById('power-slider');
         const controlsPanel = document.getElementById('controls-panel');
         
-        angleSlider.oninput = () => document.getElementById('angle-val').innerText = angleSlider.value;
-        powerSlider.oninput = () => document.getElementById('power-val').innerText = powerSlider.value;
+        angleSlider.addEventListener('input', () => document.getElementById('angle-val').innerText = angleSlider.value);
+        powerSlider.addEventListener('input', () => document.getElementById('power-val').innerText = powerSlider.value);
 
         // ==========================================
-        // 3. UI NOTIFICATIONS (Replacing Alerts)
+        // 3. UI NOTIFICATIONS
         // ==========================================
         function showModal(title, message) {
             document.getElementById('modal-title').innerText = title;
             document.getElementById('modal-body').innerText = message;
             document.getElementById('ui-modal').classList.add('show');
         }
-        function closeModal() {
+        document.getElementById('modal-btn-close').addEventListener('click', () => {
             document.getElementById('ui-modal').classList.remove('show');
-        }
+        });
 
         // ==========================================
-        // 4. LOBBY & MULTIPLAYER LOGIC
+        // 4. LOBBY LOGIC (Adapted from Multiplayer_SD)
         // ==========================================
-        function generateCode() {
-            return Math.floor(1000 + Math.random() * 9000).toString(); // 4 digit code
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.has('room')) {
+            roomId = urlParams.get('room');
+            lobbyDefault.style.display = 'none';
+            lobbyJoin.style.display = 'block';
         }
 
-        function createGame() {
-            roomCode = generateCode();
-            myRole = 'p1';
-            roomRef = db.ref('carronade_games/' + roomCode);
+        const getInitialState = () => ({
+            state: 'playing',
+            turn: 1,
+            p1Health: 100,
+            p2Health: 100,
+            lastShot: { player: 0, angle: 0, power: 0, timestamp: 0 }
+        });
+
+        document.getElementById('btn-create-room').addEventListener('click', async () => {
+            roomId = Math.random().toString(36).substring(2, 7).toUpperCase();
+            const newRef = ref(db, 'carronade_rooms/' + roomId);
+            await set(newRef, getInitialState());
+            window.location.href = window.location.pathname + '?room=' + roomId;
+        });
+
+        document.getElementById('btn-join-p1').addEventListener('click', () => joinGame(1));
+        document.getElementById('btn-join-p2').addEventListener('click', () => joinGame(2));
+
+        function joinGame(role) {
+            myRole = role;
+            lobbyScreen.style.display = 'none';
+            gameScreen.style.display = 'block';
             
-            // Set initial state
-            roomRef.set({
-                state: 'waiting',
-                turn: 'p1',
-                p1Health: 100,
-                p2Health: 100,
-                lastShot: null
+            const shareInput = document.getElementById('share-link');
+            shareInput.value = window.location.href;
+            shareInput.onclick = () => shareInput.select();
+
+            dbRef = ref(db, 'carronade_rooms/' + roomId);
+            
+            // Listen for Realtime Changes
+            onValue(dbRef, (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    localState = data;
+                    updateUI();
+                } else {
+                    showModal("Error", "Room not found or deleted.");
+                }
             });
-
-            document.getElementById('room-code-display').style.display = 'block';
-            document.getElementById('room-code-display').innerText = "Room Code: " + roomCode;
-            
-            listenToRoom();
         }
 
-        function joinGame() {
-            const codeInput = document.getElementById('join-code').value.trim();
-            if(codeInput.length !== 4) {
-                showModal("Error", "Please enter a 4-digit room code.");
+        // ==========================================
+        // 5. GAME LOGIC & RENDERING
+        // ==========================================
+        function updateUI() {
+            if (!localState) return;
+
+            // Update Health UI
+            document.getElementById('p1-hp-text').innerText = localState.p1Health;
+            document.getElementById('health-p1-fill').style.width = localState.p1Health + '%';
+            document.getElementById('p2-hp-text').innerText = localState.p2Health;
+            document.getElementById('health-p2-fill').style.width = localState.p2Health + '%';
+
+            // Check Game Over Condition
+            if (localState.p1Health <= 0 || localState.p2Health <= 0) {
+                let winner = localState.p1Health > 0 ? 1 : 2;
+                document.getElementById('turn-indicator').innerText = `Game Over! Player ${winner} wins!`;
+                document.getElementById('turn-indicator').style.color = winner === 1 ? 'var(--coral)' : 'var(--purple)';
+                controlsPanel.classList.add('disabled');
                 return;
             }
-            roomCode = codeInput;
-            myRole = 'p2';
-            roomRef = db.ref('carronade_games/' + roomCode);
 
-            roomRef.once('value', snapshot => {
-                if(snapshot.exists() && snapshot.val().state === 'waiting') {
-                    roomRef.update({ state: 'playing' });
-                    listenToRoom();
-                } else {
-                    showModal("Oops!", "Room not found or game already started.");
-                }
-            });
+            // Handle Turns
+            if (localState.turn === myRole) {
+                document.getElementById('turn-indicator').innerText = "⭐ It is YOUR turn! ⭐";
+                document.getElementById('turn-indicator').style.color = "var(--green-deep)";
+                controlsPanel.classList.remove('disabled');
+            } else if (localState.turn === 0) {
+                document.getElementById('turn-indicator').innerText = "Firing...";
+                document.getElementById('turn-indicator').style.color = "var(--muted)";
+                controlsPanel.classList.add('disabled');
+            } else {
+                document.getElementById('turn-indicator').innerText = `Player ${localState.turn}'s turn...`;
+                document.getElementById('turn-indicator').style.color = "var(--muted)";
+                controlsPanel.classList.add('disabled');
+            }
+
+            // Trigger Animation if a new shot was logged
+            if (localState.lastShot && localState.lastShot.timestamp > window.lastShotTime) {
+                window.lastShotTime = localState.lastShot.timestamp;
+                // Animate for both screens
+                animateProjectile(localState.lastShot.player, localState.lastShot.angle, localState.lastShot.power);
+            }
         }
 
-        function listenToRoom() {
-            document.getElementById('lobby-screen').style.display = 'none';
-            document.getElementById('game-screen').style.display = 'block';
+        document.getElementById('fire-btn').addEventListener('click', () => {
+            if(localState.turn !== myRole) return;
 
-            roomRef.on('value', snapshot => {
-                const data = snapshot.val();
-                if(!data) return;
-
-                // Update Health UI
-                document.getElementById('p1-hp-text').innerText = data.p1Health;
-                document.getElementById('health-p1-fill').style.width = data.p1Health + '%';
-                document.getElementById('p2-hp-text').innerText = data.p2Health;
-                document.getElementById('health-p2-fill').style.width = data.p2Health + '%';
-
-                // Check Game Over
-                if (data.p1Health <= 0 || data.p2Health <= 0) {
-                    let winner = data.p1Health > 0 ? "Player 1" : "Player 2";
-                    let msg = (myRole === 'p1' && winner === "Player 1") || (myRole === 'p2' && winner === "Player 2") 
-                              ? "You won the showdown! 🏆" : "You were defeated! 💥";
-                    showModal("Game Over", msg);
-                    controlsPanel.classList.add('disabled');
-                    return;
-                }
-
-                // Handle Turns
-                if (data.state === 'playing') {
-                    isMyTurn = (data.turn === myRole);
-                    if(isMyTurn) {
-                        controlsPanel.classList.remove('disabled');
-                        document.getElementById('turn-indicator').innerText = "Your Turn!";
-                    } else {
-                        controlsPanel.classList.add('disabled');
-                        document.getElementById('turn-indicator').innerText = "Opponent's Turn...";
-                    }
-                }
-
-                // Animate Opponent's Shot if it's new
-                if (data.lastShot && data.lastShot.timestamp > (window.lastShotTime || 0)) {
-                    window.lastShotTime = data.lastShot.timestamp;
-                    if (data.lastShot.player !== myRole) {
-                        animateProjectile(data.lastShot.player, data.lastShot.angle, data.lastShot.power, false);
-                    }
-                }
-            });
-        }
-
-        // ==========================================
-        // 5. GAME PHYSICS & ANIMATION
-        // ==========================================
-        function fireCannon() {
-            if(!isMyTurn) return;
-
-            let angle = parseInt(angleSlider.value);
-            let power = parseInt(powerSlider.value);
-            
-            // Log the shot to Firebase
             const shotData = {
                 player: myRole,
-                angle: angle,
-                power: power,
+                angle: parseInt(angleSlider.value),
+                power: parseInt(powerSlider.value),
                 timestamp: Date.now()
             };
             
-            roomRef.update({ lastShot: shotData });
-            animateProjectile(myRole, angle, power, true);
-        }
+            // Set turn to 0 to disable controls during animation
+            update(dbRef, { turn: 0, lastShot: shotData });
+        });
 
-        function animateProjectile(shooter, angleDeg, power, isLocalShooter) {
-            controlsPanel.classList.add('disabled'); // Disable during animation
-
-            // Visual adjust for SVG barrel
-            let barrel = document.getElementById(shooter === 'p1' ? 'barrel-p1' : 'barrel-p2');
+        function animateProjectile(shooter, angleDeg, power) {
+            // Adjust SVG barrel angle visually
+            let barrel = document.getElementById(shooter === 1 ? 'barrel-p1' : 'barrel-p2');
             barrel.setAttribute('transform', `rotate(${-angleDeg} 50 63)`);
 
             // Physics Setup
             let angleRad = angleDeg * (Math.PI / 180);
-            let v0 = power * 0.8; // scaling factor for canvas size
+            let v0 = power * 0.8; 
             let g = 9.8; 
             
-            let startX = shooter === 'p1' ? 70 : canvas.width - 70;
+            let startX = shooter === 1 ? 70 : canvas.width - 70;
             let startY = canvas.height - 40;
             
             let t = 0;
@@ -481,9 +432,9 @@
             function draw() {
                 ctx.clearRect(0, 0, canvas.width, canvas.height);
                 
-                // Calculate next position (Projectile Motion)
+                // Projectile Motion
                 let xDist = v0 * Math.cos(angleRad) * t;
-                currentX = shooter === 'p1' ? startX + xDist : startX - xDist;
+                currentX = shooter === 1 ? startX + xDist : startX - xDist;
                 currentY = startY - (v0 * Math.sin(angleRad) * t - 0.5 * g * t * t);
                 
                 // Draw Cannonball
@@ -497,8 +448,8 @@
                 // Collision Detection with Ground
                 if (currentY >= canvas.height - 10) {
                     cancelAnimationFrame(animationId);
-                    ctx.clearRect(0, 0, canvas.width, canvas.height); // clear ball
-                    checkHit(shooter, currentX, isLocalShooter);
+                    ctx.clearRect(0, 0, canvas.width, canvas.height); 
+                    evaluateHit(shooter, currentX);
                 } else {
                     animationId = requestAnimationFrame(draw);
                 }
@@ -506,30 +457,29 @@
             draw();
         }
 
-        function checkHit(shooter, impactX, isLocalShooter) {
-            // Target definitions
-            let targetMin = shooter === 'p1' ? canvas.width - 100 : 20;
-            let targetMax = shooter === 'p1' ? canvas.width - 20  : 100;
+        function evaluateHit(shooter, impactX) {
+            // Only the person who fired calculates the hit and updates the database
+            if (shooter !== myRole) return;
+
+            // Hitboxes: P1 sits near X=0, P2 sits near X=canvas.width
+            let targetMin = shooter === 1 ? canvas.width - 100 : 20;
+            let targetMax = shooter === 1 ? canvas.width - 20  : 100;
             
             let hit = (impactX >= targetMin && impactX <= targetMax);
             
-            // Only the player who fired updates the health in the database
-            if(isLocalShooter) {
-                roomRef.once('value').then(snap => {
-                    let data = snap.val();
-                    let updates = { turn: shooter === 'p1' ? 'p2' : 'p1' };
-                    
-                    if (hit) {
-                        if(shooter === 'p1') updates.p2Health = Math.max(0, data.p2Health - 25);
-                        if(shooter === 'p2') updates.p1Health = Math.max(0, data.p1Health - 25);
-                    }
-                    
-                    roomRef.update(updates);
-                    
-                    if(hit) showModal("Direct Hit!", "Great shot!");
-                    else showModal("Miss!", "Adjust your math for the next turn.");
-                });
+            let nextTurn = shooter === 1 ? 2 : 1;
+            let updates = { turn: nextTurn };
+            
+            if (hit) {
+                if(shooter === 1) updates.p2Health = Math.max(0, localState.p2Health - 25);
+                if(shooter === 2) updates.p1Health = Math.max(0, localState.p1Health - 25);
             }
+            
+            // Push results to Firebase
+            update(dbRef, updates).then(() => {
+                if(hit) showModal("🎯 Direct Hit!", "Great shot! They lost 25 HP.");
+                else showModal("💨 Miss!", "Check your angle and power, and try again next turn.");
+            });
         }
     </script>
 </body>
